@@ -1,0 +1,12 @@
+services:
+  wp-notifier:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      SESSION_DATA_PATH: /app/.wwebjs_auth
+      DATA_DIR: /app/data
+    volumes:
+      - ./.wwebjs_auth:/app/.wwebjs_auth
+      - ./data:/app/data
+    shm_size: 1gb
