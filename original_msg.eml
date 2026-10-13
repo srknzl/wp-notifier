@@ -1,0 +1,1743 @@
+Delivered-To: serkanozel380@gmail.com
+Received: by 2002:a05:6e04:c9e:b0:405:24c7:f259 with SMTP id xx30csp394431imc;
+        Tue, 13 Oct 2026 04:55:45 -0700 (PDT)
+X-Received: by 2002:a05:690c:f09:b0:8a8:85d7:265 with SMTP id 00721157ae682-8b07edb5942mr38862927b3.36.1791892545545;
+        Tue, 13 Oct 2026 04:55:45 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1791892545; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=cGmCEctQpy2YDz1aGwoaqn3gxRljNNelF+E4CVIeitUdZ47k2HoNQw7IQmi86bUeTJ
+         Kz7zIeiJsUECn8JAQJRtide+KNovkAooofYcme8ngG2QLroT40zE5Ha57Tf0rwdrj4wQ
+         zMCYBnNZ642+pRyJtVKzNd3veSzyGm5yNWIlqJdUUOpwsHzm23b2WOTNVyM7VkB0Iu5J
+         S7RrC6YkGWgOXL3Vn82NZMoEzXpzYBsnqoggE5hxFdxxSedJoyuItRuyl6WREMBxHpk8
+         QgCXE7Nqdz3OHwI4YG5fVzNXE40foa2IaYnK0gWs3dXRoAsteaduulinj4GYO0GzRJ7N
+         7DoA==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=XzP9NI8u9Cgn35gnw16qMy1AmZ2RE9Ct/CKBafoPWRI=;
+        fh=LymEW0trlO+9vmw17Pd/Pze0OMTAKnthjANkIX+qdnA=;
+        b=AKMaskbPoibSRt0c4RrjCFc3CO6N3ptwuhgqZFqXujNwLVQGT7xuqN6a4jgjF08vVA
+         cNUhGJ58QkqD+KoAYVK8WbPsymDT3bpNAP1ZaYKONHWta4O3kW6nBwj2+hi66Pr4HJ0T
+         uEf3jY6eK1h96PXITL4ZAY6u5I5YFyvs2twMvKPDtebFRA2ZIgU3an2woQQlKx7vfIBO
+         aG8EkmRVER+wjKc7604tXzQmj2xq1ishzPznWOvcWqBZ9Gi6nw2+qfB17ChgW9S+d8Ut
+         rAm7Zvpgl2VquLdFKPtuCngAG3gwPrZDFqx+HZzU8HlnDQcWHfzRoL1KZqpUx57Nrk7q
+         c7wQ==;
+        dara=google.com
+ARC-Authentication-Results: i=2; mx.google.com;
+       dkim=pass header.i=@jumpcloud.com header.s=google header.b=nEVldWXc;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of serkan.ozel@jumpcloud.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=serkan.ozel@jumpcloud.com;
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=jumpcloud.com;
+       dara=pass header.i=@gmail.com
+Return-Path: <serkan.ozel@jumpcloud.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 00721157ae682-8b07ed0c2afsor90776317b3.0.2026.10.13.04.55.45
+        for <serkanozel380@gmail.com>
+        (Google Transport Security);
+        Tue, 13 Oct 2026 04:55:45 -0700 (PDT)
+Received-SPF: pass (google.com: domain of serkan.ozel@jumpcloud.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@jumpcloud.com header.s=google header.b=nEVldWXc;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of serkan.ozel@jumpcloud.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=serkan.ozel@jumpcloud.com;
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=jumpcloud.com;
+       dara=pass header.i=@gmail.com
+ARC-Seal: i=1; a=rsa-sha256; t=1791892545; cv=none;
+        d=google.com; s=arc-20260327;
+        b=RyYBbXcvtFg6MYKhlH6ew0czrpmHxi0sMhLqm/Yhc+Cr6Gp3gr/fcQuRmxdnzjJ5UU
+         VI9aomdSsAr/hXW5/7JjpKQzwXkBKxknb7KURfO7EgMPiaqP6eZbHsJMCJaoPKhRpTEC
+         9iLZuiuXf5KzbQNsoIXGYEMPpaFfEw8b7wfDdRCMxGD9g8cR5aYcuHdmoirxv98McCQP
+         /HeGvsiE+dzSXuHOa3EixpciTbW5416N5fQB65JOsxf4Bdh4eO9+BTgiDQH1PvSnfAX/
+         AQG0n+yQGtYdj6H4LBO8sCk/uHz4lEapCytrhlt00kSqSiAiw5eKR4xePXg9xb5KxYVj
+         JP6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=XzP9NI8u9Cgn35gnw16qMy1AmZ2RE9Ct/CKBafoPWRI=;
+        fh=LymEW0trlO+9vmw17Pd/Pze0OMTAKnthjANkIX+qdnA=;
+        b=MAUfl1tLdFo4/p0FaPI6zT1hQzdEVz6PMqFu8UgGntZF4sEMhBknfrzGBQracIutej
+         Ox3AoeFPqy48tEPjcSgJtOTv2jATV405hMNEdmsK5+Qx/xSfB2ZQWXScyR+CAlsbmJHn
+         OS5LThCnJGoLjT8hYeMeKHwdgJ/pgaZ0KhOCS8M7agXtdDGQ4+xuPqOTIRAESeruFK/W
+         0/vA+E3K550BjrQJEntLYHLaVbqb9WVg5j+0N+tBRCT7wfS8hREE+p/W/vOpnSNWbkHP
+         yf1kaabGGsMo6JXDuxy2PltIUKvKKdRsJU+n3bB+Dm2waeHwQR1satlcWJiUH9AsW/iD
+         kQMg==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jumpcloud.com; s=google; t=1791892545; x=1792497345; dara=google.com;
+        h=content-type:to:subject:message-id:date:from:mime-version:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=XzP9NI8u9Cgn35gnw16qMy1AmZ2RE9Ct/CKBafoPWRI=;
+        b=nEVldWXcoaPMwomsF7vtrD6o3lt82MzQCj/fNl4QdMpiJesB8NAoUPnZstJF43UlCn
+         omN8zmWpzuiJ2z+32W0IST6azqy80gXatuCZW6DDxz4LaBgGc1wmyIgoyfSQMgGhr29R
+         KHH7n1OE4D6wsaLWgR2QNz8CJsalbDK/XdlDo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791892545; x=1792497345;
+        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=XzP9NI8u9Cgn35gnw16qMy1AmZ2RE9Ct/CKBafoPWRI=;
+        b=RkR6QAvlbyq34t+oUShL9vp6A7FXXS8GdnPJPSLCsi0NnCeOh0stje0MTl5wQtqJki
+         UVWJfmAMvmgSoSQvoSLu3gVO6UTV+/mYiythgQt/B6GXbuZgK3OYjY291hpEFryZtTMR
+         tNUkPP9SCmLEVCUkp0gpxtcB75yFwoPs7MaB91M235N6LqEYdneca9P00gt1D2si5zFr
+         EXHddl4bjO241luTWKEE9I1ptKkYIh3Kp3KlhOqoL9YVycFSD+pY+FOTwXQvn0N5IYCh
+         XDVhwGQnb/9ly6s7n2+EFXMM0MiJseMvIEJBp0WnuxDHyoPomXj+TrKG/vg2PeAvgKOQ
+         nA9w==
+X-Gm-Message-State: AFq9FYL2iMKa4Ob9ibrFx5H9gd84r0LUPtue/7viPD4LNfIL6bujs3WM
+	F07cu7IqUJEF/3OJiqPlnEIIJ5GwDcbJ7fr6TnOYz98AH6Ub5OoToQVitJtLNJzxDm4D0ty5OK3
+	2ObWMYe6kcAd3F3uUJMlZop3c/Ps025CpsqjvRUFszbpRjbpDom2+78OE0Q==
+X-Gm-Gg: AYBFou1ZyjmkFHvft4mXqsl7WQt7jbukUaEaz8rQlAYRKQqH5Pu0jZhabgoRHcalJF1
+	1CQDVzWGgdxgBeP+A6kIhxLA6OWQdvLZirXYGyR8ve276LcpLZRZ5LWa+SjtZdNreiSE76PMWBs
+	56qpQRRv0jiGrKO6Ot8Vi+w+mZKnrOTEH4kX5cpQvU0OxVxno/F/KiqCqo+P5oanpPX2fHHAi9c
+	B67rUmG8ev7Bqhserp8FCR/UpiAZljuIUp7WCl/x6JUZGUrXzpj0HX15vuZIf3cWCjBjE/nmoFu
+	eo5rsReMOK6Uwizm5pC+kUqA4pARAwsIEoMfefga8F9HiLonl0BkPYi0IOVNEBCy+DGM6vBqf9D
+	AonEP4YB6LXGe
+X-Received: by 2002:a05:690c:3685:b0:89a:63bc:8c4 with SMTP id
+ 00721157ae682-8b07ee6d7e3mr35323077b3.78.1791892544694; Tue, 13 Oct 2026
+ 04:55:44 -0700 (PDT)
+MIME-Version: 1.0
+From: Serkan Ozel <serkan.ozel@jumpcloud.com>
+Date: Tue, 13 Oct 2026 14:55:31 +0300
+X-Gm-Features: AclHuK8sYEXOptiaZQG6CI_bGYIq7xTWCzvRCnRURV3Lmo9MYjVDJvXlPUU5Vh4
+Message-ID: <CABE6Lh+T3og-L7L05TtWCxpAA+JLO7o_tAHnf-5EkcFVvLSTPQ@mail.gmail.com>
+Subject: 
+To: Serkan Ozel <serkanozel380@gmail.com>
+Content-Type: multipart/alternative; boundary="0000000000009a48f7065db77e1c"
+
+--0000000000009a48f7065db77e1c
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Technical Requirements Document (TRD)System Overview
+The software continuously monitors a designated WhatsApp group for incoming
+messages containing PDF documents. Upon receiving a PDF, it parses the
+document, searches for a target row/amount matching specific search rules,
+crops that row into an image, uploads the image to cloud storage, and
+dispatches an SMS containing the extracted data and proof image URL.
+
+Additionally, the system maintains high availability by monitoring its own
+WhatsApp session health. It emits immediate alert SMS messages upon session
+disconnection, authentication failure, or process downtime.
+
+Technical Specifications1. Functional Requirements1.1 WhatsApp Client &
+Session Monitoring
+
+   - *Authentication:* Maintain a persistent Chromium/WhatsApp Web session
+   using whatsapp-web.js (or Puppeteer-based equivalent) store session
+   tokens locally.
+
+   - *Lifecycle Event Listening:*
+
+   - Detect authenticated and ready states.
+
+      - Detect auth_failure and disconnected events.
+
+      - *Active Health Check (Heartbeat):*
+
+   - Periodically invoke client.getState() every 15 minutes.
+
+      - If the state is not CONNECTED or the call times out (30s
+      threshold), flag a session crash.
+
+      - *Auto-Reconnection Attempt:*
+
+   - Attempt up to 3 automatic re-initializations (exponential backoff:
+      30s, 60s, 120s) on session loss.
+
+      - If all retry attempts fail, emit a *Critical Session Failure Alert*=
+.
+
+
+1.2 Message & PDF Processing
+
+   - *Group Filtering:* Listen exclusively to incoming messages from a
+   configured TARGET_GROUP_ID. Ignore all other private/group messages.
+
+   - *Media Identification:* Filter for attachments with MIME type
+   application/pdf.
+
+   - *Data Extraction:*
+
+   - Render PDF pages to extract structural layout and raw text (pdfplumber
+      / pypdf).
+
+      - Locate the row containing target identifiers (e.g., regex matching
+      specific invoice numbers, keywords, or balance line items).
+
+      - Extract target text fields (e.g., entity name, total amount due,
+      due date).
+
+      - *Evidence Cropping:*
+
+   - Convert the target PDF page into a high-resolution PNG image.
+
+      - Crop the image bounding box around the target row with a 20px
+      padding margin.
+
+      - Upload the cropped PNG to cloud storage (AWS S3 / GCP Storage /
+      Vercel Blob) with a unique filename (/evidence/YYYYMMDD_UUID.png).
+
+      - Generate a shortened, direct access URL.
+
+
+1.3 SMS Dispatch Engine
+
+   - *Integration:* Connect to a telephony API (Twilio / Vonage) via REST
+   SDK.
+
+   - *Message Templates:*
+
+   - *Target Data Found Alert:*
+      [ALERT] PDF Data Extracted: <KEYWORD> - Amount: <AMOUNT>. Evidence:
+      <EVIDENCE_URL>
+
+      - *Session Failure Alert:*
+      [CRITICAL] WhatsApp Bot Session Disconnected! Reason: <REASON>.
+      Re-authentication (QR scan) required.
+
+      - *Character Budget Optimization:* Ensure SMS body remains strictly
+   under *160 characters* (1 SMS segment) to minimize delivery fees.
+
+
+System Architecture & Data Flow
+
++-------------------+      (Incoming Message)      +-----------------------=
++
+|  WhatsApp Group   | ---------------------------> |  WhatsApp Listener    =
+|
++-------------------+                              | (Node.js/Puppeteer)   =
+|
+                                                   +-----------------------=
++
+                                                               |
+                                                  [Health / Exception Check=
+]
+                                                               |
+
++--------------------+--------------------+
+                                          | (Session Alive)
+             | (Session Dead)
+                                          v
+             v
+                               +--------------------+
+ +--------------------+
+                               |  PDF Processor     |
+ | Session Recovery   |
+                               |  & Cropper Engine  |
+ | Retry Engine       |
+                               +--------------------+
+ +--------------------+
+                                          |
+             |
+                                    [Uploads Image]
+       [Retry Fails]
+                                          v
+             v
+                               +--------------------+
+ +--------------------+
+                               |  Cloud Storage     |
+ |  Twilio SMS API    |
+                               |  (AWS S3 / CDN)    |
+ |  (Failure Alert)   |
+                               +--------------------+
+ +--------------------+
+                                          |
+             |
+                                   [Short URL Generated]
+             v
+                                          |
+ +--------------------+
+
++---------------------------> | Destination Mobile |
+
+ +--------------------+
+
+Component Requirements & Interface ContractsConfiguration Interface (
+config.env)
+Bash
+
+# Telephony
+TWILIO_ACCOUNT_SID=3DACxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=3Dxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_FROM_NUMBER=3D+1234567890
+ALERT_DESTINATION_NUMBER=3D+1987654321
+# WhatsApp Configuration
+TARGET_GROUP_ID=3D120363xxxxxxxx@g.us
+SESSION_DATA_PATH=3D./.wwebjs_auth
+# Cloud Storage
+AWS_S3_BUCKET_NAME=3Dpdf-evidence-vault
+AWS_S3_REGION=3Dus-east-1
+AWS_ACCESS_KEY_ID=3DAKIAxxxxxxxx
+AWS_SECRET_ACCESS_KEY=3Dxxxxxxxx
+# Target Parsing Rules
+PDF_TARGET_REGEX=3D(?i)(total\s*due|amount\s*payable)
+
+Module Breakdown
+*Module Name* *Language/Stack* *Responsibility*
+*SessionManager* Node.js / whatsapp-web.js Manages auth, listens to
+auth_failure/disconnected, executes heartbeat checks, handles
+auto-reconnects.
+*PdfExtractor* Python (pdfplumber + Pillow) or Node.js (pdf-lib +
+canvas) Downloads
+PDF bytes, locates bounding box coordinates for string matches, crops PNG
+canvas, exports image stream.
+*StorageService* AWS SDK (@aws-sdk/client-s3) Receives PNG buffer, uploads
+to S3 with public-read permissions or presigned expiration, returns short
+URL.
+*SmsNotifier* Twilio SDK Handles queued message dispatch, logs delivery
+status callback errors, executes fallback retries.Non-Functional
+Requirements1. Reliability & Resilience
+
+   - *Process Persistence:* Execute using a process manager (PM2 or Docker
+   container restart policy unless-stopped).
+
+   - *Session Deduplication:* Log processed PDF file hashes (MD5) to
+   prevent duplicate SMS alerts if WhatsApp re-emits message events.
+
+   - *Network Fault Tolerance:* Wrap all HTTP API calls (Twilio, AWS S3) in
+   exponential backoff retry loops.
+
+
+2. Error Handling & Edge Cases
+*Failure Mode* *Trigger Condition* *System Action*
+*WhatsApp Logout* User logs out linked device via phone app. Emits
+auth_failure event =E2=86=92 Triggers immediate *Critical SMS Alert*.
+*Headless Browser Crash* Memory leak or Chromium crash. Process Manager
+(PM2) restarts script =E2=86=92 Health check fails recovery =E2=86=92 Sends=
+ SMS.
+*Unreadable PDF / Image OCR* Vector text unavailable (scanned PDF image). S=
+ends
+SMS: [WARNING] PDF received in <GROUP> but text layer was unreadable.
+*Target String Not Found* PDF contains no match for search regex. Logs
+event to audit trail; silently skips SMS (or sends optional debug log).3.
+Security
+
+   - *Data Minimization:* Delete temporary PDF files and local cropped
+   images immediately after S3 upload.
+
+   - *Credentials:* Keep API tokens, phone numbers, and cloud keys strictly
+   in environment variables; never hardcode credentials.
+
+--0000000000009a48f7065db77e1c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail-markdown gmail-markdown-main-panel gma=
+il-md-content enable-luminous-fast-follows enable-updated-hr-color gmail-st=
+ronger gmail-tutor-markdown-rendering" style=3D"background:none 0% 0%/auto =
+repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31)=
+;clear:none;color:rgb(31,31,31);columns:auto;direction:ltr;float:none;isola=
+tion:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;q=
+uotes:auto;speak:normal;zoom:1;font-family:&quot;Google Sans Text&quot;,san=
+s-serif;line-height:1.15" id=3D"gmail-model-response-message-contentr_69892=
+8a9a5d71b48" dir=3D"ltr"><h1 style=3D"background:none 0% 0%/auto repeat scr=
+oll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:non=
+e;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1=
+;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1=
+;font-family:&quot;Google Sans&quot;,sans-serif;line-height:1.15">Technical=
+ Requirements Document (TRD)</h1><h2 style=3D"background:none 0% 0%/auto re=
+peat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);c=
+lear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;o=
+pacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:norma=
+l;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-height:1.15">S=
+ystem Overview</h2><div style=3D"background:none 0% 0%/auto repeat scroll p=
+adding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;col=
+umns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outl=
+ine:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line=
+-height:1.15">The software continuously monitors a designated WhatsApp grou=
+p for incoming messages containing PDF documents. Upon receiving a PDF, it =
+parses the document, searches for a target row/amount matching specific sea=
+rch rules, crops that row into an image, uploads the image to cloud storage=
+, and dispatches an SMS containing the extracted data and proof image URL.<=
+/div><br><div style=3D"background:none 0% 0%/auto repeat scroll padding-box=
+ border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;=
+direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31=
+,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.=
+15">Additionally, the system maintains high availability by monitoring its =
+own WhatsApp session health. It emits immediate alert SMS messages upon ses=
+sion disconnection, authentication failure, or process downtime.</div><br><=
+h2 style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box=
+ rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:l=
+tr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) non=
+e 3px;padding:0px;quotes:auto;speak:normal;zoom:1;font-family:&quot;Google =
+Sans&quot;,sans-serif;line-height:1.15">Technical Specifications</h2><h3 st=
+yle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba=
+(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;fl=
+oat:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px=
+;padding:0px;quotes:auto;speak:normal;zoom:1;font-family:&quot;Google Sans&=
+quot;,sans-serif;line-height:1.15">1. Functional Requirements</h3><h4 style=
+=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,=
+0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float=
+:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;pa=
+dding:0px;quotes:auto;speak:normal;zoom:1;font-family:&quot;Google Sans&quo=
+t;,sans-serif;line-height:1.15">1.1 WhatsApp Client &amp; Session Monitorin=
+g</h4><ul style=3D"background:none 0% 0%/auto repeat scroll padding-box bor=
+der-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;dire=
+ction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,=
+31) none 3px;padding:0px 0px 0px 3.36px;quotes:auto;speak:normal;zoom:1;lin=
+e-height:1.15"><li style=3D"background:none 0% 0%/auto repeat scroll paddin=
+g-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:=
+auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:r=
+gb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoo=
+m:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scrol=
+l padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;=
+columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;o=
+utline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:nor=
+mal;zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%/auto repeat =
+scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:=
+none;columns:auto;direction:ltr;display:inline;float:none;isolation:auto;ma=
+rgin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;s=
+peak:normal;zoom:1;line-height:1.15">Authentication:</b> Maintain a persist=
+ent Chromium/WhatsApp Web session using <code style=3D"background:none 0% 0=
+%/auto repeat scroll padding-box border-box rgb(242,240,240);border:0px rgb=
+a(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;=
+display:inline-block;float:none;font-style:normal;font-variant:normal;font-=
+size-adjust:none;font-kerning:auto;font-feature-settings:normal;font-stretc=
+h:normal;font-size:15px;line-height:1.15;font-family:&quot;Google Sans Text=
+&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.=
+55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">whatsapp-web.=
+js</code> (or Puppeteer-based equivalent) store session tokens locally.</di=
+v><br></li><li style=3D"background:none 0% 0%/auto repeat scroll padding-bo=
+x border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto=
+;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(3=
+1,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;=
+line-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll pa=
+dding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;colu=
+mns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outli=
+ne:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;=
+zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%/auto repeat scro=
+ll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none=
+;columns:auto;direction:ltr;display:inline;float:none;isolation:auto;margin=
+:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak=
+:normal;zoom:1;line-height:1.15">Lifecycle Event Listening:</b></div><br><u=
+l style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box =
+rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:lt=
+r;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none=
+ 3px;padding:0px 0px 0px 3.36px;quotes:auto;speak:normal;zoom:1;line-height=
+:1.15"><li style=3D"background:none 0% 0%/auto repeat scroll padding-box bo=
+rder-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;dir=
+ection:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31=
+,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;line=
+-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll paddin=
+g-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:=
+auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:r=
+gb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom=
+:1;line-height:1.15">Detect <code style=3D"background:none 0% 0%/auto repea=
+t scroll padding-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55=
+);clear:none;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inli=
+ne-block;float:none;font-style:normal;font-variant:normal;font-size-adjust:=
+none;font-kerning:auto;font-feature-settings:normal;font-stretch:normal;fon=
+t-size:15px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-=
+serif;isolation:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px=
+;padding:4px 6px;quotes:auto;speak:normal;zoom:1">authenticated</code> and =
+<code style=3D"background:none 0% 0%/auto repeat scroll padding-box border-=
+box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,=
+0,0.55);columns:auto;direction:ltr;display:inline-block;float:none;font-sty=
+le:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto;font-=
+feature-settings:normal;font-stretch:normal;font-size:15px;line-height:1.15=
+;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:=
+0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto=
+;speak:normal;zoom:1">ready</code> states.</div><br></li><li style=3D"backg=
+round:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bo=
+rder:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;iso=
+lation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px=
+ 0px 0px 36px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div style=
+=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,=
+0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float=
+:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;pa=
+dding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Det=
+ect <code style=3D"background:none 0% 0%/auto repeat scroll padding-box bor=
+der-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(=
+0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;float:none;font=
+-style:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto;f=
+ont-feature-settings:normal;font-stretch:normal;font-size:15px;line-height:=
+1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;mar=
+gin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:=
+auto;speak:normal;zoom:1">auth_failure</code> and <code style=3D"background=
+:none 0% 0%/auto repeat scroll padding-box border-box rgb(242,240,240);bord=
+er:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;dire=
+ction:ltr;display:inline-block;float:none;font-style:normal;font-variant:no=
+rmal;font-size-adjust:none;font-kerning:auto;font-feature-settings:normal;f=
+ont-stretch:normal;font-size:15px;line-height:1.15;font-family:&quot;Google=
+ Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgb=
+a(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">dis=
+connected</code> events.</div><br></li></ul></li><li style=3D"background:no=
+ne 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px=
+ rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:a=
+uto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px=
+ 36px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div style=3D"backg=
+round:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bo=
+rder:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;iso=
+lation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px=
+ 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"=
+background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,=
+0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:i=
+nline;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) =
+none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Acti=
+ve Health Check (Heartbeat):</b></div><br><ul style=3D"background:none 0% 0=
+%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31=
+,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;mar=
+gin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 3.36px=
+;quotes:auto;speak:normal;zoom:1;line-height:1.15"><li style=3D"background:=
+none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0=
+px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation=
+:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0=
+px 36px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div style=3D"bac=
+kground:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);=
+border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;i=
+solation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0=
+px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Periodical=
+ly invoke <code style=3D"background:none 0% 0%/auto repeat scroll padding-b=
+ox border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color=
+:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;float:non=
+e;font-style:normal;font-variant:normal;font-size-adjust:none;font-kerning:=
+auto;font-feature-settings:normal;font-stretch:normal;font-size:15px;line-h=
+eight:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:au=
+to;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;q=
+uotes:auto;speak:normal;zoom:1">client.getState()</code> every 15 minutes.<=
+/div><br></li><li style=3D"background:none 0% 0%/auto repeat scroll padding=
+-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:a=
+uto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rg=
+b(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom=
+:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;ou=
+tline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:norm=
+al;zoom:1;line-height:1.15">If the state is not <code style=3D"background:n=
+one 0% 0%/auto repeat scroll padding-box border-box rgb(242,240,240);border=
+:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;direct=
+ion:ltr;display:inline-block;float:none;font-style:normal;font-variant:norm=
+al;font-size-adjust:none;font-kerning:auto;font-feature-settings:normal;fon=
+t-stretch:normal;font-size:15px;line-height:1.15;font-family:&quot;Google S=
+ans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgba(=
+0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">CONNE=
+CTED</code> or the call times out (30s threshold), flag a session crash.</d=
+iv><br></li></ul></li><li style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;ou=
+tline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:nor=
+mal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto repea=
+t scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clea=
+r:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opac=
+ity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;sp=
+eak:normal;zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%/auto =
+repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31)=
+;clear:none;columns:auto;direction:ltr;display:inline;float:none;isolation:=
+auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes=
+:auto;speak:normal;zoom:1;line-height:1.15">Auto-Reconnection Attempt:</b><=
+/div><br><ul style=3D"background:none 0% 0%/auto repeat scroll padding-box =
+border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;d=
+irection:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,=
+31,31) none 3px;padding:0px 0px 0px 3.36px;quotes:auto;speak:normal;zoom:1;=
+line-height:1.15"><li style=3D"background:none 0% 0%/auto repeat scroll pad=
+ding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;colum=
+ns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outlin=
+e:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;=
+zoom:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto repeat sc=
+roll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:no=
+ne;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:=
+1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:=
+normal;zoom:1;line-height:1.15">Attempt up to 3 automatic re-initialization=
+s (exponential backoff: 30s, 60s, 120s) on session loss.</div><br></li><li =
+style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rg=
+ba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;=
+float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3=
+px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;line-height:1.1=
+5"><div style=3D"background:none 0% 0%/auto repeat scroll padding-box borde=
+r-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direct=
+ion:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31=
+) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-hei=
+ght:1.15">If all retry attempts fail, emit a <b style=3D"background:none 0%=
+ 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(=
+31,31,31);clear:none;columns:auto;direction:ltr;display:inline;float:none;i=
+solation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0=
+px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Critical Session Failu=
+re Alert</b>.</div><br></li></ul></li></ul><h4 style=3D"background:none 0% =
+0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(3=
+1,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;ma=
+rgin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;s=
+peak:normal;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-heig=
+ht:1.15">1.2 Message &amp; PDF Processing</h4><ul style=3D"background:none =
+0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rg=
+b(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto=
+;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 3.=
+36px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><li style=3D"backgro=
+und:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bord=
+er:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isola=
+tion:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0=
+px 0px 36px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div style=3D=
+"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0=
+,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:no=
+ne;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;paddi=
+ng:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b sty=
+le=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(=
+0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;dis=
+play:inline;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,3=
+1,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15=
+">Group Filtering:</b> Listen exclusively to incoming messages from a confi=
+gured <code style=3D"background:none 0% 0%/auto repeat scroll padding-box b=
+order-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgb=
+a(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;float:none;fo=
+nt-style:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto=
+;font-feature-settings:normal;font-stretch:normal;font-size:15px;line-heigh=
+t:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;m=
+argin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quote=
+s:auto;speak:normal;zoom:1">TARGET_GROUP_ID</code>. Ignore all other privat=
+e/group messages.</div><br></li><li style=3D"background:none 0% 0%/auto rep=
+eat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);cl=
+ear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;op=
+acity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto=
+;speak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0%/=
+auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,3=
+1,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margi=
+n:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quot=
+es:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"background:none 0=
+% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb=
+(31,31,31);clear:none;columns:auto;direction:ltr;display:inline;float:none;=
+isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:=
+0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Media Identification:=
+</b> Filter for attachments with MIME type <code style=3D"background:none 0=
+% 0%/auto repeat scroll padding-box border-box rgb(242,240,240);border:0px =
+rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;direction:l=
+tr;display:inline-block;float:none;font-style:normal;font-variant:normal;fo=
+nt-size-adjust:none;font-kerning:auto;font-feature-settings:normal;font-str=
+etch:normal;font-size:15px;line-height:1.15;font-family:&quot;Google Sans T=
+ext&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgba(0,0,0=
+,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">applicatio=
+n/pdf</code>.</div><br></li><li style=3D"background:none 0% 0%/auto repeat =
+scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:=
+none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacit=
+y:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;spe=
+ak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto=
+ repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31=
+);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0p=
+x;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:a=
+uto;speak:normal;zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%=
+/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,=
+31,31);clear:none;columns:auto;direction:ltr;display:inline;float:none;isol=
+ation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;=
+quotes:auto;speak:normal;zoom:1;line-height:1.15">Data Extraction:</b></div=
+><br><ul style=3D"background:none 0% 0%/auto repeat scroll padding-box bord=
+er-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direc=
+tion:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,3=
+1) none 3px;padding:0px 0px 0px 3.36px;quotes:auto;speak:normal;zoom:1;line=
+-height:1.15"><li style=3D"background:none 0% 0%/auto repeat scroll padding=
+-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:a=
+uto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rg=
+b(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom=
+:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;ou=
+tline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:norm=
+al;zoom:1;line-height:1.15">Render PDF pages to extract structural layout a=
+nd raw text (<code style=3D"background:none 0% 0%/auto repeat scroll paddin=
+g-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;co=
+lor:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;float:=
+none;font-style:normal;font-variant:normal;font-size-adjust:none;font-kerni=
+ng:auto;font-feature-settings:normal;font-stretch:normal;font-size:15px;lin=
+e-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation=
+:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6p=
+x;quotes:auto;speak:normal;zoom:1">pdfplumber</code> / <code style=3D"backg=
+round:none 0% 0%/auto repeat scroll padding-box border-box rgb(242,240,240)=
+;border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto=
+;direction:ltr;display:inline-block;float:none;font-style:normal;font-varia=
+nt:normal;font-size-adjust:none;font-kerning:auto;font-feature-settings:nor=
+mal;font-stretch:normal;font-size:15px;line-height:1.15;font-family:&quot;G=
+oogle Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outlin=
+e:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1=
+">pypdf</code>).</div><br></li><li style=3D"background:none 0% 0%/auto repe=
+at scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);cle=
+ar:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opa=
+city:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;=
+speak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0%/a=
+uto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31=
+,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin=
+:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quote=
+s:auto;speak:normal;zoom:1;line-height:1.15">Locate the row containing targ=
+et identifiers (e.g., regex matching specific invoice numbers, keywords, or=
+ balance line items).</div><br></li><li style=3D"background:none 0% 0%/auto=
+ repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31=
+);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0p=
+x;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:=
+auto;speak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0%=
+ 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(=
+31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;m=
+argin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;=
+quotes:auto;speak:normal;zoom:1;line-height:1.15">Extract target text field=
+s (e.g., entity name, total amount due, due date).</div><br></li></ul></li>=
+<li style=3D"background:none 0% 0%/auto repeat scroll padding-box border-bo=
+x rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:=
+ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) no=
+ne 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;line-height=
+:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll padding-box b=
+order-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;di=
+rection:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,3=
+1,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line=
+-height:1.15"><b style=3D"background:none 0% 0%/auto repeat scroll padding-=
+box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:au=
+to;direction:ltr;display:inline;float:none;isolation:auto;margin:0px;opacit=
+y:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoo=
+m:1;line-height:1.15">Evidence Cropping:</b></div><br><ul style=3D"backgrou=
+nd:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);borde=
+r:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolat=
+ion:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0p=
+x 0px 3.36px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><li style=3D=
+"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0=
+,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:no=
+ne;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;paddi=
+ng:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div =
+style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rg=
+ba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;=
+float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3=
+px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15=
+">Convert the target PDF page into a high-resolution PNG image.</div><br></=
+li><li style=3D"background:none 0% 0%/auto repeat scroll padding-box border=
+-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;directi=
+on:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31)=
+ none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;line-hei=
+ght:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll padding-bo=
+x border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto=
+;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(3=
+1,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;l=
+ine-height:1.15">Crop the image bounding box around the target row with a 2=
+0px padding margin.</div><br></li><li style=3D"background:none 0% 0%/auto r=
+epeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);=
+clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;=
+opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:au=
+to;speak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0=
+%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31=
+,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;mar=
+gin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;qu=
+otes:auto;speak:normal;zoom:1;line-height:1.15">Upload the cropped PNG to c=
+loud storage (AWS S3 / GCP Storage / Vercel Blob) with a unique filename (<=
+code style=3D"background:none 0% 0%/auto repeat scroll padding-box border-b=
+ox rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0=
+,0.55);columns:auto;direction:ltr;display:inline-block;float:none;font-styl=
+e:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto;font-f=
+eature-settings:normal;font-stretch:normal;font-size:15px;line-height:1.15;=
+font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0=
+px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;=
+speak:normal;zoom:1">/evidence/YYYYMMDD_UUID.png</code>).</div><br></li><li=
+ style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box r=
+gba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr=
+;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none =
+3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;line-height:1.=
+15"><div style=3D"background:none 0% 0%/auto repeat scroll padding-box bord=
+er-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direc=
+tion:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,3=
+1) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-he=
+ight:1.15">Generate a shortened, direct access URL.</div><br></li></ul></li=
+></ul><h4 style=3D"background:none 0% 0%/auto repeat scroll padding-box bor=
+der-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;dire=
+ction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,=
+31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;font-family:&quot;=
+Google Sans&quot;,sans-serif;line-height:1.15">1.3 SMS Dispatch Engine</h4>=
+<ul style=3D"background:none 0% 0%/auto repeat scroll padding-box border-bo=
+x rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:=
+ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) no=
+ne 3px;padding:0px 0px 0px 3.36px;quotes:auto;speak:normal;zoom:1;line-heig=
+ht:1.15"><li style=3D"background:none 0% 0%/auto repeat scroll padding-box =
+border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;d=
+irection:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,=
+31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:1;li=
+ne-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll padd=
+ing-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;column=
+s:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline=
+:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zo=
+om:1;line-height:1.15"><b style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;display:inline;float:none;isolation:auto;margin:0=
+px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:n=
+ormal;zoom:1;line-height:1.15">Integration:</b> Connect to a telephony API =
+(Twilio / Vonage) via REST SDK.</div><br></li><li style=3D"background:none =
+0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rg=
+b(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto=
+;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36=
+px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div style=3D"backgrou=
+nd:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);borde=
+r:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolat=
+ion:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0p=
+x 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"bac=
+kground:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);=
+border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inli=
+ne;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) non=
+e 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Message=
+ Templates:</b></div><br><ul style=3D"background:none 0% 0%/auto repeat scr=
+oll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:non=
+e;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1=
+;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 3.36px;quotes:auto;spea=
+k:normal;zoom:1;line-height:1.15"><li style=3D"background:none 0% 0%/auto r=
+epeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);=
+clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;=
+opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:au=
+to;speak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0=
+%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31=
+,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;mar=
+gin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;qu=
+otes:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"background:none=
+ 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px r=
+gb(31,31,31);clear:none;columns:auto;direction:ltr;display:inline;float:non=
+e;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;paddin=
+g:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Target Data Found A=
+lert:</b></div><div style=3D"background:none 0% 0%/auto repeat scroll paddi=
+ng-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns=
+:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:=
+rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoo=
+m:1;line-height:1.15"><code style=3D"background:none 0% 0%/auto repeat scro=
+ll padding-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clea=
+r:none;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inline-blo=
+ck;float:none;font-style:normal;font-variant:normal;font-size-adjust:none;f=
+ont-kerning:auto;font-feature-settings:normal;font-stretch:normal;font-size=
+:15px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;=
+isolation:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;paddi=
+ng:4px 6px;quotes:auto;speak:normal;zoom:1">[ALERT] PDF Data Extracted: &lt=
+;KEYWORD&gt; - Amount: &lt;AMOUNT&gt;. Evidence: &lt;EVIDENCE_URL&gt;</code=
+></div><br></li><li style=3D"background:none 0% 0%/auto repeat scroll paddi=
+ng-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns=
+:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:=
+rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zo=
+om:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scro=
+ll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none=
+;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;=
+outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:no=
+rmal;zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%/auto repeat=
+ scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear=
+:none;columns:auto;direction:ltr;display:inline;float:none;isolation:auto;m=
+argin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;=
+speak:normal;zoom:1;line-height:1.15">Session Failure Alert:</b></div><div =
+style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rg=
+ba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;=
+float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3=
+px;padding:0px 0px 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15=
+"><code style=3D"background:none 0% 0%/auto repeat scroll padding-box borde=
+r-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,=
+0,0,0.55);columns:auto;direction:ltr;display:inline-block;float:none;font-s=
+tyle:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto;fon=
+t-feature-settings:normal;font-stretch:normal;font-size:15px;line-height:1.=
+15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margi=
+n:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:au=
+to;speak:normal;zoom:1">[CRITICAL] WhatsApp Bot Session Disconnected! Reaso=
+n: &lt;REASON&gt;. Re-authentication (QR scan) required.</code></div><br></=
+li></ul></li><li style=3D"background:none 0% 0%/auto repeat scroll padding-=
+box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:au=
+to;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb=
+(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:normal;zoom:=
+1;line-height:1.15"><div style=3D"background:none 0% 0%/auto repeat scroll =
+padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;co=
+lumns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;out=
+line:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto;speak:norma=
+l;zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%/auto repeat sc=
+roll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:no=
+ne;columns:auto;direction:ltr;display:inline;float:none;isolation:auto;marg=
+in:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;spe=
+ak:normal;zoom:1;line-height:1.15">Character Budget Optimization:</b> Ensur=
+e SMS body remains strictly under <b style=3D"background:none 0% 0%/auto re=
+peat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);c=
+lear:none;columns:auto;direction:ltr;display:inline;float:none;isolation:au=
+to;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:a=
+uto;speak:normal;zoom:1;line-height:1.15">160 characters</b> (1 SMS segment=
+) to minimize delivery fees.</div><br></li></ul><h2 style=3D"background:non=
+e 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px =
+rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:au=
+to;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:a=
+uto;speak:normal;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line=
+-height:1.15">System Architecture &amp; Data Flow</h2><span class=3D"gmail-=
+no-md gmail-md-has-block-component" style=3D"background:none 0% 0%/auto rep=
+eat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);cl=
+ear:none;columns:auto;direction:ltr;display:block;float:none;isolation:auto=
+;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:aut=
+o;speak:normal;zoom:1;line-height:1.15"><span class=3D"gmail-ng-tns-c160723=
+3648-30 enable-luminous-code-block gmail-ng-star-inserted" style=3D"backgro=
+und:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bord=
+er:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inline;f=
+loat:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3p=
+x;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div class=
+=3D"gmail-code-block gmail-ng-tns-c1607233648-30 gmail-ng-animate-disabled =
+gmail-ng-trigger gmail-ng-trigger-codeBlockRevealAnimation" style=3D"backgr=
+ound:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bor=
+der:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isol=
+ation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;=
+quotes:auto;speak:normal;zoom:1;line-height:1.15"><div class=3D"gmail-forma=
+tted-code-block-internal-container gmail-ng-tns-c1607233648-30" style=3D"ba=
+ckground:none 0% 0%/auto repeat scroll padding-box border-box rgb(20,20,20)=
+;border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;=
+isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:=
+26px 0px 0px 32px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div cl=
+ass=3D"gmail-animated-opacity gmail-ng-tns-c1607233648-30" style=3D"backgro=
+und:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bord=
+er:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isola=
+tion:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;q=
+uotes:auto;speak:normal;zoom:1;line-height:1.15"><pre class=3D"gmail-ng-tns=
+-c1607233648-30" style=3D"background:none 0% 0%/auto repeat scroll padding-=
+box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:au=
+to;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb=
+(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;font-family=
+:&quot;Google Sans Text&quot;,sans-serif;line-height:1.15"><code role=3D"te=
+xt" class=3D"gmail-code-container gmail-formatted gmail-ng-tns-c1607233648-=
+30 gmail-no-decoration-radius" style=3D"background:none 0% 0%/auto repeat s=
+croll padding-box border-box rgba(0,0,0,0);border:0px rgb(255,255,255);clea=
+r:none;color:rgb(255,255,255);columns:auto;direction:ltr;display:block;floa=
+t:none;font-style:normal;font-variant:normal;font-size-adjust:none;font-ker=
+ning:auto;font-feature-settings:normal;font-stretch:normal;font-size:14px;l=
+ine-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolati=
+on:auto;margin:0px;opacity:1;outline:rgb(255,255,255) none 3px;padding:16px=
+ 0px 32px;quotes:auto;speak:normal;zoom:1">+-------------------+      (Inco=
+ming Message)      +-----------------------+
+|  WhatsApp Group   | ---------------------------&gt; |  WhatsApp Listener =
+   |
++-------------------+                              | (Node.js/Puppeteer)   =
+|
+                                                   +-----------------------=
++
+                                                               |
+                                                  [Health / Exception Check=
+]
+                                                               |
+                                          +--------------------+-----------=
+---------+
+                                          | (Session Alive)                =
+         | (Session Dead)
+                                          v                                =
+         v
+                               +--------------------+                   +--=
+------------------+
+                               |  PDF Processor     |                   | S=
+ession Recovery   |
+                               |  &amp; Cropper Engine  |                  =
+ | Retry Engine       |
+                               +--------------------+                   +--=
+------------------+
+                                          |                                =
+         |
+                                    [Uploads Image]                        =
+   [Retry Fails]
+                                          v                                =
+         v
+                               +--------------------+                   +--=
+------------------+
+                               |  Cloud Storage     |                   |  =
+Twilio SMS API    |
+                               |  (AWS S3 / CDN)    |                   |  =
+(Failure Alert)   |
+                               +--------------------+                   +--=
+------------------+
+                                          |                                =
+         |
+                                   [Short URL Generated]                   =
+         v
+                                          |                             +--=
+------------------+
+                                          +---------------------------&gt; =
+| Destination Mobile |
+                                                                        +--=
+------------------+
+</code></pre></div></div></div></span></span><h2 style=3D"background:none 0=
+% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb=
+(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;=
+margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto=
+;speak:normal;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-he=
+ight:1.15">Component Requirements &amp; Interface Contracts</h2><h3 style=
+=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,=
+0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float=
+:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;pa=
+dding:0px;quotes:auto;speak:normal;zoom:1;font-family:&quot;Google Sans&quo=
+t;,sans-serif;line-height:1.15">Configuration Interface (<code style=3D"bac=
+kground:none 0% 0%/auto repeat scroll padding-box border-box rgb(242,240,24=
+0);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:au=
+to;direction:ltr;display:inline-block;float:none;font:15px/1.15 &quot;Googl=
+e Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rg=
+ba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">co=
+nfig.env</code>)</h3><span class=3D"gmail-no-md gmail-md-has-block-componen=
+t" style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box=
+ rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:l=
+tr;display:block;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb=
+(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height=
+:1.15"><span class=3D"gmail-ng-tns-c1607233648-31 enable-luminous-code-bloc=
+k gmail-ng-star-inserted" style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;display:inline;float:none;isolation:auto;margin:0=
+px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:n=
+ormal;zoom:1;line-height:1.15"><div class=3D"gmail-code-block gmail-ng-tns-=
+c1607233648-31 gmail-ng-animate-disabled gmail-ng-trigger gmail-ng-trigger-=
+codeBlockRevealAnimation" style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;ou=
+tline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;li=
+ne-height:1.15"><div class=3D"gmail-formatted-code-block-internal-container=
+ gmail-ng-tns-c1607233648-31" style=3D"background:none 0% 0%/auto repeat sc=
+roll padding-box border-box rgb(20,20,20);border:0px rgb(31,31,31);clear:no=
+ne;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:=
+1;outline:rgb(31,31,31) none 3px;padding:26px 0px 0px 32px;quotes:auto;spea=
+k:normal;zoom:1;line-height:1.15"><div class=3D"gmail-animated-opacity gmai=
+l-ng-tns-c1607233648-31" style=3D"background:none 0% 0%/auto repeat scroll =
+padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;co=
+lumns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;out=
+line:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;lin=
+e-height:1.15"><div class=3D"gmail-code-block-decoration gmail-header-forma=
+tted gmail-gds-emphasized-body-m gmail-ng-tns-c1607233648-31 gmail-ng-star-=
+inserted" style=3D"background-image:none;background-position:0% 0%;backgrou=
+nd-size:auto;background-repeat:repeat;background-origin:padding-box;backgro=
+und-clip:border-box;border:0px rgb(255,255,255);clear:none;color:rgb(255,25=
+5,255);columns:auto;direction:ltr;display:flex;float:none;isolation:auto;ma=
+rgin:0px;opacity:1;outline:rgb(255,255,255) none 3px;padding:0px 11px 0px 0=
+px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><span class=3D"gmail-n=
+g-tns-c1607233648-31" style=3D"background:none 0% 0%/auto repeat scroll pad=
+ding-box border-box rgba(0,0,0,0);border:0px rgb(255,255,255);clear:none;co=
+lumns:auto;direction:ltr;display:block;float:none;isolation:auto;margin:0px=
+;opacity:1;outline:rgb(255,255,255) none 3px;padding:0px;quotes:auto;speak:=
+normal;zoom:1;line-height:1.15">Bash</span><div class=3D"gmail-buttons gmai=
+l-ng-tns-c1607233648-31 gmail-ng-star-inserted" style=3D"background:none 0%=
+ 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(=
+255,255,255);clear:none;columns:auto;direction:ltr;float:none;isolation:aut=
+o;margin:0px;opacity:1;outline:rgb(255,255,255) none 3px;padding:0px;quotes=
+:auto;speak:normal;zoom:1;line-height:1.15"><span type=3D"onSurface" size=
+=3D"small" class=3D"gmail-mat-mdc-tooltip-trigger gmail-download-button gma=
+il-ng-tns-c1607233648-31 gmail-gem-button gmail-gem-button-badge-size-small=
+ gmail-gem-button-size-small gmail-gem-button-type-on-surface gmail-lm-enab=
+led gmail-ng-star-inserted" aria-describedby=3D"cdk-describedby-message-ng-=
+1-45" style=3D"background:none 0% 0%/auto repeat scroll padding-box border-=
+box rgba(0,0,0,0);border:0px rgb(255,255,255);clear:none;columns:auto;direc=
+tion:ltr;display:inline-block;float:none;isolation:auto;margin:0px;opacity:=
+1;outline:rgb(255,255,255) none 3px;padding:0px;quotes:auto;speak:normal;zo=
+om:1;line-height:1.15"><button class=3D"gmail-mdc-icon-button gmail-mat-mdc=
+-icon-button gmail-mat-mdc-button-base gmail-mat-badge gmail-mat-unthemed g=
+mail-mat-badge-overlap gmail-mat-badge-above gmail-mat-badge-after gmail-ma=
+t-badge-small gmail-mat-badge-hidden gmail-ng-star-inserted" aria-label=3D"=
+Download code" style=3D"background-image:none;background-position:0% 0%;bac=
+kground-size:auto;background-repeat:repeat;background-origin:padding-box;ba=
+ckground-clip:border-box;border-width:0px;border-style:none;border-color:rg=
+b(0,0,0);clear:none;color:rgb(0,0,0);columns:auto;direction:ltr;display:fle=
+x;float:none;font:24px/1.15 &quot;Google Sans Text&quot;,sans-serif;isolati=
+on:auto;margin:0px;opacity:1;outline:rgb(0,0,0) none 3px;padding:6px;quotes=
+:auto;speak:normal;zoom:1"><span class=3D"gmail-mat-mdc-button-persistent-r=
+ipple gmail-mdc-icon-button__ripple" style=3D"background:none 0% 0%/auto re=
+peat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(0,0,0);clea=
+r:none;columns:auto;direction:ltr;display:block;float:none;font-style:norma=
+l;font-variant:normal;font-size-adjust:none;font-kerning:auto;font-feature-=
+settings:normal;font-stretch:normal;font-size:24px;line-height:1.15;font-fa=
+mily:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opac=
+ity:1;outline:rgb(0,0,0) none 3px;padding:0px;quotes:auto;speak:normal;zoom=
+:1"></span><span style=3D"background:none 0% 0%/auto repeat scroll padding-=
+box border-box rgba(0,0,0,0);border:0px rgb(0,0,0);clear:none;columns:auto;=
+direction:ltr;display:flex;font-style:normal;font-variant:normal;font-size-=
+adjust:none;font-kerning:auto;font-feature-settings:normal;font-stretch:nor=
+mal;font-size:24px;line-height:1.15;font-family:&quot;Google Sans Text&quot=
+;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgb(0,0,0) none 3p=
+x;padding:0px;quotes:auto;speak:normal;zoom:1"><span role=3D"img" class=3D"=
+gmail-mat-icon gmail-notranslate gmail-lm-icon-l gmail-lumi-symbols gmail-m=
+at-ligature-font gmail-mat-icon-no-color gmail-ng-star-inserted" aria-hidde=
+n=3D"true" style=3D"background:none 0% 0%/auto no-repeat scroll padding-box=
+ border-box rgba(0,0,0,0);border:0px rgb(255,255,255);clear:none;color:rgb(=
+255,255,255);columns:auto;direction:ltr;display:flex;float:none;isolation:a=
+uto;margin:0px;opacity:1;outline:rgb(255,255,255) none 3px;padding:0px;quot=
+es:auto;speak:normal;zoom:1;line-height:1.15"></span></span><span class=3D"=
+gmail-mat-focus-indicator" style=3D"background:none 0% 0%/auto repeat scrol=
+l padding-box border-box rgba(0,0,0,0);border:0px rgb(0,0,0);clear:none;col=
+umns:auto;direction:ltr;display:block;float:none;font-style:normal;font-var=
+iant:normal;font-size-adjust:none;font-kerning:auto;font-feature-settings:n=
+ormal;font-stretch:normal;font-size:24px;line-height:1.15;font-family:&quot=
+;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outl=
+ine:rgb(0,0,0) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1"></span=
+><span class=3D"gmail-mat-mdc-button-touch-target" style=3D"background:none=
+ 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px r=
+gb(0,0,0);clear:none;columns:auto;direction:ltr;display:none;float:none;fon=
+t-style:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto;=
+font-feature-settings:normal;font-stretch:normal;font-size:24px;line-height=
+:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;ma=
+rgin:0px;opacity:1;outline:rgb(0,0,0) none 3px;padding:0px;quotes:auto;spea=
+k:normal;zoom:1"></span></button></span><span type=3D"onSurface" size=3D"sm=
+all" class=3D"gmail-mat-mdc-tooltip-trigger gmail-copy-button gmail-ng-tns-=
+c1607233648-31 gmail-gem-button gmail-gem-button-badge-size-small gmail-gem=
+-button-size-small gmail-gem-button-type-on-surface gmail-lm-enabled gmail-=
+ng-star-inserted" aria-describedby=3D"cdk-describedby-message-ng-1-46" styl=
+e=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0=
+,0,0,0);border:0px rgb(255,255,255);clear:none;columns:auto;direction:ltr;d=
+isplay:inline-block;float:none;isolation:auto;margin:0px;opacity:1;outline:=
+rgb(255,255,255) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-=
+height:1.15"><button class=3D"gmail-mdc-icon-button gmail-mat-mdc-icon-butt=
+on gmail-mat-mdc-button-base gmail-mat-badge gmail-mat-unthemed gmail-mat-b=
+adge-overlap gmail-mat-badge-above gmail-mat-badge-after gmail-mat-badge-sm=
+all gmail-mat-badge-hidden gmail-ng-star-inserted" aria-label=3D"Copy code"=
+ style=3D"background-image:none;background-position:0% 0%;background-size:a=
+uto;background-repeat:repeat;background-origin:padding-box;background-clip:=
+border-box;border-width:0px;border-style:none;border-color:rgb(0,0,0);clear=
+:none;color:rgb(0,0,0);columns:auto;direction:ltr;display:flex;float:none;f=
+ont:24px/1.15 &quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin=
+:0px;opacity:1;outline:rgb(0,0,0) none 3px;padding:6px;quotes:auto;speak:no=
+rmal;zoom:1"><span class=3D"gmail-mat-mdc-button-persistent-ripple gmail-md=
+c-icon-button__ripple" style=3D"background:none 0% 0%/auto repeat scroll pa=
+dding-box border-box rgba(0,0,0,0);border:0px rgb(0,0,0);clear:none;columns=
+:auto;direction:ltr;display:block;float:none;font-style:normal;font-variant=
+:normal;font-size-adjust:none;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:24px;line-height:1.15;font-family:&quot;Goo=
+gle Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:=
+rgb(0,0,0) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1"></span><sp=
+an style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box=
+ rgba(0,0,0,0);border:0px rgb(0,0,0);clear:none;columns:auto;direction:ltr;=
+display:flex;font-style:normal;font-variant:normal;font-size-adjust:none;fo=
+nt-kerning:auto;font-feature-settings:normal;font-stretch:normal;font-size:=
+24px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;i=
+solation:auto;margin:0px;opacity:1;outline:rgb(0,0,0) none 3px;padding:0px;=
+quotes:auto;speak:normal;zoom:1"><span role=3D"img" class=3D"gmail-mat-icon=
+ gmail-notranslate gmail-lm-icon-l gmail-lumi-symbols gmail-mat-ligature-fo=
+nt gmail-mat-icon-no-color gmail-ng-star-inserted" aria-hidden=3D"true" sty=
+le=3D"background:none 0% 0%/auto no-repeat scroll padding-box border-box rg=
+ba(0,0,0,0);border:0px rgb(255,255,255);clear:none;color:rgb(255,255,255);c=
+olumns:auto;direction:ltr;display:flex;float:none;isolation:auto;margin:0px=
+;opacity:1;outline:rgb(255,255,255) none 3px;padding:0px;quotes:auto;speak:=
+normal;zoom:1;line-height:1.15"></span></span><span class=3D"gmail-mat-focu=
+s-indicator" style=3D"background:none 0% 0%/auto repeat scroll padding-box =
+border-box rgba(0,0,0,0);border:0px rgb(0,0,0);clear:none;columns:auto;dire=
+ction:ltr;display:block;float:none;font-style:normal;font-variant:normal;fo=
+nt-size-adjust:none;font-kerning:auto;font-feature-settings:normal;font-str=
+etch:normal;font-size:24px;line-height:1.15;font-family:&quot;Google Sans T=
+ext&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgb(0,0,0)=
+ none 3px;padding:0px;quotes:auto;speak:normal;zoom:1"></span><span class=
+=3D"gmail-mat-mdc-button-touch-target" style=3D"background:none 0% 0%/auto =
+repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(0,0,0);cl=
+ear:none;columns:auto;direction:ltr;display:none;float:none;font-style:norm=
+al;font-variant:normal;font-size-adjust:none;font-kerning:auto;font-feature=
+-settings:normal;font-stretch:normal;font-size:24px;line-height:1.15;font-f=
+amily:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opa=
+city:1;outline:rgb(0,0,0) none 3px;padding:0px;quotes:auto;speak:normal;zoo=
+m:1"></span></button></span></div></div><pre class=3D"gmail-ng-tns-c1607233=
+648-31" style=3D"background:none 0% 0%/auto repeat scroll padding-box borde=
+r-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direct=
+ion:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31=
+) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;font-family:&quot;Go=
+ogle Sans Text&quot;,sans-serif;line-height:1.15"><code role=3D"text" class=
+=3D"gmail-code-container gmail-formatted gmail-ng-tns-c1607233648-31" style=
+=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,=
+0,0,0);border:0px rgb(255,255,255);clear:none;color:rgb(255,255,255);column=
+s:auto;direction:ltr;display:block;float:none;font-style:normal;font-varian=
+t:normal;font-size-adjust:none;font-kerning:auto;font-feature-settings:norm=
+al;font-stretch:normal;font-size:14px;line-height:1.15;font-family:&quot;Go=
+ogle Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline=
+:rgb(255,255,255) none 3px;padding:16px 0px 32px;quotes:auto;speak:normal;z=
+oom:1"><span class=3D"gmail-hljs-comment" style=3D"background:none 0% 0%/au=
+to repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(128,12=
+8,128);clear:none;color:rgb(128,128,128);columns:auto;direction:ltr;display=
+:inline;float:none;font-style:normal;font-variant:normal;font-size-adjust:n=
+one;font-kerning:auto;font-feature-settings:normal;font-stretch:normal;font=
+-size:14px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-s=
+erif;isolation:auto;margin:0px;opacity:1;outline:rgb(128,128,128) none 3px;=
+padding:0px;quotes:auto;speak:normal;zoom:1"># Telephony</span>
+TWILIO_ACCOUNT_SID=3DACxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=3Dxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_FROM_NUMBER=3D+1234567890
+ALERT_DESTINATION_NUMBER=3D+1987654321
+
+<span class=3D"gmail-hljs-comment" style=3D"background:none 0% 0%/auto repe=
+at scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(128,128,128);=
+clear:none;color:rgb(128,128,128);columns:auto;direction:ltr;display:inline=
+;float:none;font-style:normal;font-variant:normal;font-size-adjust:none;fon=
+t-kerning:auto;font-feature-settings:normal;font-stretch:normal;font-size:1=
+4px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;is=
+olation:auto;margin:0px;opacity:1;outline:rgb(128,128,128) none 3px;padding=
+:0px;quotes:auto;speak:normal;zoom:1"># WhatsApp Configuration</span>
+TARGET_GROUP_ID=3D<a href=3D"mailto:120363xxxxxxxx@g.us">120363xxxxxxxx@g.u=
+s</a>
+SESSION_DATA_PATH=3D./.wwebjs_auth
+
+<span class=3D"gmail-hljs-comment" style=3D"background:none 0% 0%/auto repe=
+at scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(128,128,128);=
+clear:none;color:rgb(128,128,128);columns:auto;direction:ltr;display:inline=
+;float:none;font-style:normal;font-variant:normal;font-size-adjust:none;fon=
+t-kerning:auto;font-feature-settings:normal;font-stretch:normal;font-size:1=
+4px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;is=
+olation:auto;margin:0px;opacity:1;outline:rgb(128,128,128) none 3px;padding=
+:0px;quotes:auto;speak:normal;zoom:1"># Cloud Storage</span>
+AWS_S3_BUCKET_NAME=3Dpdf-evidence-vault
+AWS_S3_REGION=3Dus-east-1
+AWS_ACCESS_KEY_ID=3DAKIAxxxxxxxx
+AWS_SECRET_ACCESS_KEY=3Dxxxxxxxx
+
+<span class=3D"gmail-hljs-comment" style=3D"background:none 0% 0%/auto repe=
+at scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(128,128,128);=
+clear:none;color:rgb(128,128,128);columns:auto;direction:ltr;display:inline=
+;float:none;font-style:normal;font-variant:normal;font-size-adjust:none;fon=
+t-kerning:auto;font-feature-settings:normal;font-stretch:normal;font-size:1=
+4px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;is=
+olation:auto;margin:0px;opacity:1;outline:rgb(128,128,128) none 3px;padding=
+:0px;quotes:auto;speak:normal;zoom:1"># Target Parsing Rules</span>
+PDF_TARGET_REGEX=3D(?i)(total\s*due|amount\s*payable)
+</code></pre></div></div></div></span></span><h3 style=3D"background:none 0=
+% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb=
+(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;=
+margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto=
+;speak:normal;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-he=
+ight:1.15">Module Breakdown</h3><table style=3D"background:none 0% 0%/auto =
+repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31)=
+;clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px=
+ 0px 32px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;=
+speak:normal;zoom:1;line-height:1.15"><thead style=3D"background:none 0% 0%=
+/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,=
+31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;marg=
+in:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;spe=
+ak:normal;zoom:1;line-height:1.15"><tr style=3D"background:none 0% 0%/auto =
+repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31)=
+;clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px=
+;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:nor=
+mal;zoom:1;line-height:1.15"><td style=3D"background:none 0% 0%/auto repeat=
+ scroll padding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,1=
+97);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;opacity=
+:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal=
+;zoom:1;line-height:1.15"><strong style=3D"background:none 0% 0%/auto repea=
+t scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clea=
+r:none;columns:auto;direction:ltr;display:inline;float:none;isolation:auto;=
+opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:norm=
+al;zoom:1;margin:0px;line-height:1.15">Module Name</strong></td><td style=
+=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,=
+0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;direction:=
+ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padd=
+ing:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><strong styl=
+e=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba(0=
+,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;disp=
+lay:inline;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3=
+px;padding:0px;quotes:auto;speak:normal;zoom:1;margin:0px;line-height:1.15"=
+>Language/Stack</strong></td><td style=3D"background:none 0% 0%/auto repeat=
+ scroll padding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,1=
+97);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;opacity=
+:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal=
+;zoom:1;line-height:1.15"><strong style=3D"background:none 0% 0%/auto repea=
+t scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clea=
+r:none;columns:auto;direction:ltr;display:inline;float:none;isolation:auto;=
+opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:norm=
+al;zoom:1;margin:0px;line-height:1.15">Responsibility</strong></td></tr></t=
+head><tbody style=3D"background:none 0% 0%/auto repeat scroll padding-box b=
+order-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;di=
+rection:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,3=
+1,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15=
+"><tr style=3D"background:none 0% 0%/auto repeat scroll padding-box border-=
+box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;directio=
+n:ltr;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) =
+none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><td =
+style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rg=
+ba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;direc=
+tion:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px=
+;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><span s=
+tyle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgb=
+a(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;i=
+solation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0=
+px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"background=
+:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:=
+0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inline;floa=
+t:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;p=
+adding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><code style=3D=
+"background:none 0% 0%/auto repeat scroll padding-box border-box rgb(242,24=
+0,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);column=
+s:auto;direction:ltr;display:inline-block;float:none;font:15px/1.15 &quot;G=
+oogle Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outlin=
+e:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1=
+">SessionManager</code></b></span></td><td style=3D"background:none 0% 0%/a=
+uto repeat scroll padding-box border-box rgba(0,0,0,0);border:1px solid rgb=
+(196,199,197);clear:none;columns:auto;direction:ltr;float:none;isolation:au=
+to;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;sp=
+eak:normal;zoom:1;line-height:1.15"><span style=3D"background:none 0% 0%/au=
+to repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,=
+31);clear:none;columns:auto;direction:ltr;isolation:auto;margin:0px;opacity=
+:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom=
+:1;line-height:1.15">Node.js / <code style=3D"background:none 0% 0%/auto re=
+peat scroll padding-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0=
+.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:i=
+nline-block;float:none;font-style:normal;font-variant:normal;font-size-adju=
+st:none;font-kerning:auto;font-feature-settings:normal;font-stretch:normal;=
+font-size:15px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sa=
+ns-serif;isolation:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none =
+3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">whatsapp-web.js</code>=
+</span></td><td style=3D"background:none 0% 0%/auto repeat scroll padding-b=
+ox border-box rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;co=
+lumns:auto;direction:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31=
+,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-heig=
+ht:1.15"><span style=3D"background:none 0% 0%/auto repeat scroll padding-bo=
+x border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto=
+;direction:ltr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) no=
+ne 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Manage=
+s auth, listens to <code style=3D"background:none 0% 0%/auto repeat scroll =
+padding-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:n=
+one;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;=
+float:none;font-style:normal;font-variant:normal;font-size-adjust:none;font=
+-kerning:auto;font-feature-settings:normal;font-stretch:normal;font-size:15=
+px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;iso=
+lation:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:=
+4px 6px;quotes:auto;speak:normal;zoom:1">auth_failure</code>/<code style=3D=
+"background:none 0% 0%/auto repeat scroll padding-box border-box rgb(242,24=
+0,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);column=
+s:auto;direction:ltr;display:inline-block;float:none;font-style:normal;font=
+-variant:normal;font-size-adjust:none;font-kerning:auto;font-feature-settin=
+gs:normal;font-stretch:normal;font-size:15px;line-height:1.15;font-family:&=
+quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;=
+outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;=
+zoom:1">disconnected</code>, executes heartbeat checks, handles auto-reconn=
+ects.</span></td></tr><tr style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;ou=
+tline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;li=
+ne-height:1.15"><td style=3D"background:none 0% 0%/auto repeat scroll paddi=
+ng-box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:non=
+e;columns:auto;direction:ltr;float:none;isolation:auto;opacity:1;outline:rg=
+b(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-=
+height:1.15"><span style=3D"background:none 0% 0%/auto repeat scroll paddin=
+g-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:=
+auto;direction:ltr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31=
+) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b=
+ style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box r=
+gba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr=
+;display:inline;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(=
+31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:=
+1.15"><code style=3D"background:none 0% 0%/auto repeat scroll padding-box b=
+order-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgb=
+a(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;float:none;fo=
+nt:15px/1.15 &quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:=
+0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto=
+;speak:normal;zoom:1">PdfExtractor</code></b></span></td><td style=3D"backg=
+round:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bo=
+rder:1px solid rgb(196,199,197);clear:none;columns:auto;direction:ltr;float=
+:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 1=
+2px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><span style=3D"backgr=
+ound:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bor=
+der:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;isolation:auto;=
+margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto=
+;speak:normal;zoom:1;line-height:1.15">Python (<code style=3D"background:no=
+ne 0% 0%/auto repeat scroll padding-box border-box rgb(242,240,240);border:=
+0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;directi=
+on:ltr;display:inline-block;float:none;font-style:normal;font-variant:norma=
+l;font-size-adjust:none;font-kerning:auto;font-feature-settings:normal;font=
+-stretch:normal;font-size:15px;line-height:1.15;font-family:&quot;Google Sa=
+ns Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgba(0=
+,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">pdfplu=
+mber</code> + <code style=3D"background:none 0% 0%/auto repeat scroll paddi=
+ng-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;c=
+olor:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;float=
+:none;font-style:normal;font-variant:normal;font-size-adjust:none;font-kern=
+ing:auto;font-feature-settings:normal;font-stretch:normal;font-size:15px;li=
+ne-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolatio=
+n:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6=
+px;quotes:auto;speak:normal;zoom:1">Pillow</code>) or Node.js (<code style=
+=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgb(242=
+,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);col=
+umns:auto;direction:ltr;display:inline-block;float:none;font-style:normal;f=
+ont-variant:normal;font-size-adjust:none;font-kerning:auto;font-feature-set=
+tings:normal;font-stretch:normal;font-size:15px;line-height:1.15;font-famil=
+y:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity=
+:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:norm=
+al;zoom:1">pdf-lib</code> + <code style=3D"background:none 0% 0%/auto repea=
+t scroll padding-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55=
+);clear:none;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inli=
+ne-block;float:none;font-style:normal;font-variant:normal;font-size-adjust:=
+none;font-kerning:auto;font-feature-settings:normal;font-stretch:normal;fon=
+t-size:15px;line-height:1.15;font-family:&quot;Google Sans Text&quot;,sans-=
+serif;isolation:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px=
+;padding:4px 6px;quotes:auto;speak:normal;zoom:1">canvas</code>)</span></td=
+><td style=3D"background:none 0% 0%/auto repeat scroll padding-box border-b=
+ox rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;=
+direction:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) non=
+e 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><s=
+pan style=3D"background:none 0% 0%/auto repeat scroll padding-box border-bo=
+x rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:=
+ltr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padd=
+ing:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Downloads PDF byt=
+es, locates bounding box coordinates for string matches, crops PNG canvas, =
+exports image stream.</span></td></tr><tr style=3D"background:none 0% 0%/au=
+to repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,=
+31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:=
+0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:=
+normal;zoom:1;line-height:1.15"><td style=3D"background:none 0% 0%/auto rep=
+eat scroll padding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,19=
+9,197);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;opac=
+ity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:nor=
+mal;zoom:1;line-height:1.15"><span style=3D"background:none 0% 0%/auto repe=
+at scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);cle=
+ar:none;columns:auto;direction:ltr;isolation:auto;margin:0px;opacity:1;outl=
+ine:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line=
+-height:1.15"><b style=3D"background:none 0% 0%/auto repeat scroll padding-=
+box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:au=
+to;direction:ltr;display:inline;float:none;isolation:auto;margin:0px;opacit=
+y:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoo=
+m:1;line-height:1.15"><code style=3D"background:none 0% 0%/auto repeat scro=
+ll padding-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clea=
+r:none;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inline-blo=
+ck;float:none;font:15px/1.15 &quot;Google Sans Text&quot;,sans-serif;isolat=
+ion:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px=
+ 6px;quotes:auto;speak:normal;zoom:1">StorageService</code></b></span></td>=
+<td style=3D"background:none 0% 0%/auto repeat scroll padding-box border-bo=
+x rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;d=
+irection:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none=
+ 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><sp=
+an style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box=
+ rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:l=
+tr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;paddi=
+ng:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">AWS SDK (<code sty=
+le=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgb(2=
+42,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);c=
+olumns:auto;direction:ltr;display:inline-block;float:none;font-style:normal=
+;font-variant:normal;font-size-adjust:none;font-kerning:auto;font-feature-s=
+ettings:normal;font-stretch:normal;font-size:15px;line-height:1.15;font-fam=
+ily:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opaci=
+ty:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:no=
+rmal;zoom:1">@aws-sdk/client-s3</code>)</span></td><td style=3D"background:=
+none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:1=
+px solid rgb(196,199,197);clear:none;columns:auto;direction:ltr;float:none;=
+isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;qu=
+otes:auto;speak:normal;zoom:1;line-height:1.15"><span style=3D"background:n=
+one 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0p=
+x rgb(31,31,31);clear:none;columns:auto;direction:ltr;isolation:auto;margin=
+:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak=
+:normal;zoom:1;line-height:1.15">Receives PNG buffer, uploads to S3 with <c=
+ode style=3D"background:none 0% 0%/auto repeat scroll padding-box border-bo=
+x rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,=
+0.55);columns:auto;direction:ltr;display:inline-block;float:none;font-style=
+:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto;font-fe=
+ature-settings:normal;font-stretch:normal;font-size:15px;line-height:1.15;f=
+ont-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0p=
+x;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;s=
+peak:normal;zoom:1">public-read</code> permissions or presigned expiration,=
+ returns short URL.</span></td></tr><tr style=3D"background:none 0% 0%/auto=
+ repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31=
+);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0p=
+x;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:no=
+rmal;zoom:1;line-height:1.15"><td style=3D"background:none 0% 0%/auto repea=
+t scroll padding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,=
+197);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;opacit=
+y:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:norma=
+l;zoom:1;line-height:1.15"><span style=3D"background:none 0% 0%/auto repeat=
+ scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear=
+:none;columns:auto;direction:ltr;isolation:auto;margin:0px;opacity:1;outlin=
+e:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-h=
+eight:1.15"><b style=3D"background:none 0% 0%/auto repeat scroll padding-bo=
+x border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto=
+;direction:ltr;display:inline;float:none;isolation:auto;margin:0px;opacity:=
+1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:=
+1;line-height:1.15"><code style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:=
+none;color:rgba(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block=
+;float:none;font:15px/1.15 &quot;Google Sans Text&quot;,sans-serif;isolatio=
+n:auto;margin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6=
+px;quotes:auto;speak:normal;zoom:1">SmsNotifier</code></b></span></td><td s=
+tyle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgb=
+a(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;direct=
+ion:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;=
+padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><span st=
+yle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba=
+(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;is=
+olation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0p=
+x;quotes:auto;speak:normal;zoom:1;line-height:1.15">Twilio SDK</span></td><=
+td style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box=
+ rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;di=
+rection:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none =
+3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><spa=
+n style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box =
+rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:lt=
+r;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;paddin=
+g:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Handles queued mess=
+age dispatch, logs delivery status callback errors, executes fallback retri=
+es.</span></td></tr></tbody></table><h2 style=3D"background:none 0% 0%/auto=
+ repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31=
+);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0p=
+x;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:no=
+rmal;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-height:1.15=
+">Non-Functional Requirements</h2><h3 style=3D"background:none 0% 0%/auto r=
+epeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);=
+clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;=
+opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:norm=
+al;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-height:1.15">=
+1. Reliability &amp; Resilience</h3><ul style=3D"background:none 0% 0%/auto=
+ repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31=
+);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0p=
+x;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 3.36px;quote=
+s:auto;speak:normal;zoom:1;line-height:1.15"><li style=3D"background:none 0=
+% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb=
+(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;=
+margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36p=
+x;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div style=3D"backgroun=
+d:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border=
+:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolati=
+on:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px=
+ 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"back=
+ground:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);b=
+order:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inlin=
+e;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none=
+ 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Process =
+Persistence:</b> Execute using a process manager (<code style=3D"background=
+:none 0% 0%/auto repeat scroll padding-box border-box rgb(242,240,240);bord=
+er:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;dire=
+ction:ltr;display:inline-block;float:none;font-style:normal;font-variant:no=
+rmal;font-size-adjust:none;font-kerning:auto;font-feature-settings:normal;f=
+ont-stretch:normal;font-size:15px;line-height:1.15;font-family:&quot;Google=
+ Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgb=
+a(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">PM2=
+</code> or Docker container restart policy <code style=3D"background:none 0=
+% 0%/auto repeat scroll padding-box border-box rgb(242,240,240);border:0px =
+rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:auto;direction:l=
+tr;display:inline-block;float:none;font-style:normal;font-variant:normal;fo=
+nt-size-adjust:none;font-kerning:auto;font-feature-settings:normal;font-str=
+etch:normal;font-size:15px;line-height:1.15;font-family:&quot;Google Sans T=
+ext&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;outline:rgba(0,0,0=
+,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoom:1">unless-sto=
+pped</code>).</div><br></li><li style=3D"background:none 0% 0%/auto repeat =
+scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:=
+none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacit=
+y:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;spe=
+ak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto=
+ repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31=
+);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0p=
+x;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:a=
+uto;speak:normal;zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%=
+/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,=
+31,31);clear:none;columns:auto;direction:ltr;display:inline;float:none;isol=
+ation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;=
+quotes:auto;speak:normal;zoom:1;line-height:1.15">Session Deduplication:</b=
+> Log processed PDF file hashes (MD5) to prevent duplicate SMS alerts if Wh=
+atsApp re-emits message events.</div><br></li><li style=3D"background:none =
+0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rg=
+b(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto=
+;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36=
+px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><div style=3D"backgrou=
+nd:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);borde=
+r:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolat=
+ion:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0p=
+x 0px 4px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"bac=
+kground:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);=
+border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inli=
+ne;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) non=
+e 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Network=
+ Fault Tolerance:</b> Wrap all HTTP API calls (Twilio, AWS S3) in exponenti=
+al backoff retry loops.</div><br></li></ul><h3 style=3D"background:none 0% =
+0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(3=
+1,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;ma=
+rgin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;s=
+peak:normal;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-heig=
+ht:1.15">2. Error Handling &amp; Edge Cases</h3><table style=3D"background:=
+none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0=
+px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation=
+:auto;margin:0px 0px 32px;opacity:1;outline:rgb(31,31,31) none 3px;padding:=
+0px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><thead style=3D"backg=
+round:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bo=
+rder:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;iso=
+lation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px=
+;quotes:auto;speak:normal;zoom:1;line-height:1.15"><tr style=3D"background:=
+none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0=
+px rgb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation=
+:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quote=
+s:auto;speak:normal;zoom:1;line-height:1.15"><td style=3D"background:none 0=
+% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:1px sol=
+id rgb(196,199,197);clear:none;columns:auto;direction:ltr;float:none;isolat=
+ion:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:a=
+uto;speak:normal;zoom:1;line-height:1.15"><strong style=3D"background:none =
+0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rg=
+b(31,31,31);clear:none;columns:auto;direction:ltr;display:inline;float:none=
+;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes=
+:auto;speak:normal;zoom:1;margin:0px;line-height:1.15">Failure Mode</strong=
+></td><td style=3D"background:none 0% 0%/auto repeat scroll padding-box bor=
+der-box rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:=
+auto;direction:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31=
+) none 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.1=
+5"><strong style=3D"background:none 0% 0%/auto repeat scroll padding-box bo=
+rder-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;dir=
+ection:ltr;display:inline;float:none;isolation:auto;opacity:1;outline:rgb(3=
+1,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;margin:0px;li=
+ne-height:1.15">Trigger Condition</strong></td><td style=3D"background:none=
+ 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:1px s=
+olid rgb(196,199,197);clear:none;columns:auto;direction:ltr;float:none;isol=
+ation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes=
+:auto;speak:normal;zoom:1;line-height:1.15"><strong style=3D"background:non=
+e 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px =
+rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inline;float:no=
+ne;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quot=
+es:auto;speak:normal;zoom:1;margin:0px;line-height:1.15">System Action</str=
+ong></td></tr></thead><tbody style=3D"background:none 0% 0%/auto repeat scr=
+oll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:non=
+e;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1=
+;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1=
+;line-height:1.15"><tr style=3D"background:none 0% 0%/auto repeat scroll pa=
+dding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;colu=
+mns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;outli=
+ne:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-=
+height:1.15"><td style=3D"background:none 0% 0%/auto repeat scroll padding-=
+box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;c=
+olumns:auto;direction:ltr;float:none;isolation:auto;opacity:1;outline:rgb(3=
+1,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-hei=
+ght:1.15"><span style=3D"background:none 0% 0%/auto repeat scroll padding-b=
+ox border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:aut=
+o;direction:ltr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) n=
+one 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><b st=
+yle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba=
+(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;di=
+splay:inline;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,=
+31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.1=
+5">WhatsApp Logout</b></span></td><td style=3D"background:none 0% 0%/auto r=
+epeat scroll padding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,=
+199,197);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;op=
+acity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:n=
+ormal;zoom:1;line-height:1.15"><span style=3D"background:none 0% 0%/auto re=
+peat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);c=
+lear:none;columns:auto;direction:ltr;isolation:auto;margin:0px;opacity:1;ou=
+tline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;li=
+ne-height:1.15">User logs out linked device via phone app.</span></td><td s=
+tyle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgb=
+a(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;direct=
+ion:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;=
+padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><span st=
+yle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba=
+(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;is=
+olation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0p=
+x;quotes:auto;speak:normal;zoom:1;line-height:1.15">Emits <code style=3D"ba=
+ckground:none 0% 0%/auto repeat scroll padding-box border-box rgb(242,240,2=
+40);border:0px rgba(0,0,0,0.55);clear:none;color:rgba(0,0,0,0.55);columns:a=
+uto;direction:ltr;display:inline-block;float:none;font-style:normal;font-va=
+riant:normal;font-size-adjust:none;font-kerning:auto;font-feature-settings:=
+normal;font-stretch:normal;font-size:15px;line-height:1.15;font-family:&quo=
+t;Google Sans Text&quot;,sans-serif;isolation:auto;margin:0px;opacity:1;out=
+line:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quotes:auto;speak:normal;zoo=
+m:1">auth_failure</code> event =E2=86=92 Triggers immediate <b style=3D"bac=
+kground:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);=
+border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inli=
+ne;float:none;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) non=
+e 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Critica=
+l SMS Alert</b>.</span></td></tr><tr style=3D"background:none 0% 0%/auto re=
+peat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);c=
+lear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;o=
+pacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:norma=
+l;zoom:1;line-height:1.15"><td style=3D"background:none 0% 0%/auto repeat s=
+croll padding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,197=
+);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;opacity:1=
+;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal;z=
+oom:1;line-height:1.15"><span style=3D"background:none 0% 0%/auto repeat sc=
+roll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:no=
+ne;columns:auto;direction:ltr;isolation:auto;margin:0px;opacity:1;outline:r=
+gb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-heig=
+ht:1.15"><b style=3D"background:none 0% 0%/auto repeat scroll padding-box b=
+order-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;di=
+rection:ltr;display:inline;float:none;isolation:auto;margin:0px;opacity:1;o=
+utline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;l=
+ine-height:1.15">Headless Browser Crash</b></span></td><td style=3D"backgro=
+und:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);bord=
+er:1px solid rgb(196,199,197);clear:none;columns:auto;direction:ltr;float:n=
+one;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 12p=
+x;quotes:auto;speak:normal;zoom:1;line-height:1.15"><span style=3D"backgrou=
+nd:none 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);borde=
+r:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;isolation:auto;ma=
+rgin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;s=
+peak:normal;zoom:1;line-height:1.15">Memory leak or Chromium crash.</span><=
+/td><td style=3D"background:none 0% 0%/auto repeat scroll padding-box borde=
+r-box rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:au=
+to;direction:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) =
+none 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"=
+><span style=3D"background:none 0% 0%/auto repeat scroll padding-box border=
+-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;directi=
+on:ltr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;p=
+adding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Process Manage=
+r (PM2) restarts script =E2=86=92 Health check fails recovery =E2=86=92 Sen=
+ds SMS.</span></td></tr><tr style=3D"background:none 0% 0%/auto repeat scro=
+ll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none=
+;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1;=
+outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;=
+line-height:1.15"><td style=3D"background:none 0% 0%/auto repeat scroll pad=
+ding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:n=
+one;columns:auto;direction:ltr;float:none;isolation:auto;opacity:1;outline:=
+rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;lin=
+e-height:1.15"><span style=3D"background:none 0% 0%/auto repeat scroll padd=
+ing-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;column=
+s:auto;direction:ltr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,=
+31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">=
+<b style=3D"background:none 0% 0%/auto repeat scroll padding-box border-box=
+ rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:l=
+tr;display:inline;float:none;isolation:auto;margin:0px;opacity:1;outline:rg=
+b(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-heigh=
+t:1.15">Unreadable PDF / Image OCR</b></span></td><td style=3D"background:n=
+one 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:1p=
+x solid rgb(196,199,197);clear:none;columns:auto;direction:ltr;float:none;i=
+solation:auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quo=
+tes:auto;speak:normal;zoom:1;line-height:1.15"><span style=3D"background:no=
+ne 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px=
+ rgb(31,31,31);clear:none;columns:auto;direction:ltr;isolation:auto;margin:=
+0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:=
+normal;zoom:1;line-height:1.15">Vector text unavailable (scanned PDF image)=
+.</span></td><td style=3D"background:none 0% 0%/auto repeat scroll padding-=
+box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;c=
+olumns:auto;direction:ltr;float:none;isolation:auto;opacity:1;outline:rgb(3=
+1,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-hei=
+ght:1.15"><span style=3D"background:none 0% 0%/auto repeat scroll padding-b=
+ox border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:aut=
+o;direction:ltr;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) n=
+one 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Sends=
+ SMS: <code style=3D"background:none 0% 0%/auto repeat scroll padding-box b=
+order-box rgb(242,240,240);border:0px rgba(0,0,0,0.55);clear:none;color:rgb=
+a(0,0,0,0.55);columns:auto;direction:ltr;display:inline-block;float:none;fo=
+nt-style:normal;font-variant:normal;font-size-adjust:none;font-kerning:auto=
+;font-feature-settings:normal;font-stretch:normal;font-size:15px;line-heigh=
+t:1.15;font-family:&quot;Google Sans Text&quot;,sans-serif;isolation:auto;m=
+argin:0px;opacity:1;outline:rgba(0,0,0,0.55) none 3px;padding:4px 6px;quote=
+s:auto;speak:normal;zoom:1">[WARNING] PDF received in &lt;GROUP&gt; but tex=
+t layer was unreadable.</code></span></td></tr><tr style=3D"background:none=
+ 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px r=
+gb(31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:aut=
+o;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:au=
+to;speak:normal;zoom:1;line-height:1.15"><td style=3D"background:none 0% 0%=
+/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:1px solid r=
+gb(196,199,197);clear:none;columns:auto;direction:ltr;float:none;isolation:=
+auto;opacity:1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;=
+speak:normal;zoom:1;line-height:1.15"><span style=3D"background:none 0% 0%/=
+auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,3=
+1,31);clear:none;columns:auto;direction:ltr;isolation:auto;margin:0px;opaci=
+ty:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zo=
+om:1;line-height:1.15"><b style=3D"background:none 0% 0%/auto repeat scroll=
+ padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:none;c=
+olumns:auto;direction:ltr;display:inline;float:none;isolation:auto;margin:0=
+px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:n=
+ormal;zoom:1;line-height:1.15">Target String Not Found</b></span></td><td s=
+tyle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgb=
+a(0,0,0,0);border:1px solid rgb(196,199,197);clear:none;columns:auto;direct=
+ion:ltr;float:none;isolation:auto;opacity:1;outline:rgb(31,31,31) none 3px;=
+padding:8px 12px;quotes:auto;speak:normal;zoom:1;line-height:1.15"><span st=
+yle=3D"background:none 0% 0%/auto repeat scroll padding-box border-box rgba=
+(0,0,0,0);border:0px rgb(31,31,31);clear:none;columns:auto;direction:ltr;is=
+olation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0p=
+x;quotes:auto;speak:normal;zoom:1;line-height:1.15">PDF contains no match f=
+or search regex.</span></td><td style=3D"background:none 0% 0%/auto repeat =
+scroll padding-box border-box rgba(0,0,0,0);border:1px solid rgb(196,199,19=
+7);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;opacity:=
+1;outline:rgb(31,31,31) none 3px;padding:8px 12px;quotes:auto;speak:normal;=
+zoom:1;line-height:1.15"><span style=3D"background:none 0% 0%/auto repeat s=
+croll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:n=
+one;columns:auto;direction:ltr;isolation:auto;margin:0px;opacity:1;outline:=
+rgb(31,31,31) none 3px;padding:0px;quotes:auto;speak:normal;zoom:1;line-hei=
+ght:1.15">Logs event to audit trail; silently skips SMS (or sends optional =
+debug log).</span></td></tr></tbody></table><h3 style=3D"background:none 0%=
+ 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(=
+31,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;m=
+argin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quotes:auto;=
+speak:normal;zoom:1;font-family:&quot;Google Sans&quot;,sans-serif;line-hei=
+ght:1.15">3. Security</h3><ul style=3D"background:none 0% 0%/auto repeat sc=
+roll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:no=
+ne;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:=
+1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 3.36px;quotes:auto;spe=
+ak:normal;zoom:1;line-height:1.15"><li style=3D"background:none 0% 0%/auto =
+repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31)=
+;clear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px=
+;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:a=
+uto;speak:normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% =
+0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(3=
+1,31,31);clear:none;columns:auto;direction:ltr;float:none;isolation:auto;ma=
+rgin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;q=
+uotes:auto;speak:normal;zoom:1;line-height:1.15"><b style=3D"background:non=
+e 0% 0%/auto repeat scroll padding-box border-box rgba(0,0,0,0);border:0px =
+rgb(31,31,31);clear:none;columns:auto;direction:ltr;display:inline;float:no=
+ne;isolation:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;paddi=
+ng:0px;quotes:auto;speak:normal;zoom:1;line-height:1.15">Data Minimization:=
+</b> Delete temporary PDF files and local cropped images immediately after =
+S3 upload.</div><br></li><li style=3D"background:none 0% 0%/auto repeat scr=
+oll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);clear:non=
+e;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;opacity:1=
+;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 36px;quotes:auto;speak:=
+normal;zoom:1;line-height:1.15"><div style=3D"background:none 0% 0%/auto re=
+peat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,31);c=
+lear:none;columns:auto;direction:ltr;float:none;isolation:auto;margin:0px;o=
+pacity:1;outline:rgb(31,31,31) none 3px;padding:0px 0px 0px 4px;quotes:auto=
+;speak:normal;zoom:1;line-height:1.15"><b style=3D"background:none 0% 0%/au=
+to repeat scroll padding-box border-box rgba(0,0,0,0);border:0px rgb(31,31,=
+31);clear:none;columns:auto;direction:ltr;display:inline;float:none;isolati=
+on:auto;margin:0px;opacity:1;outline:rgb(31,31,31) none 3px;padding:0px;quo=
+tes:auto;speak:normal;zoom:1;line-height:1.15">Credentials:</b> Keep API to=
+kens, phone numbers, and cloud keys strictly in environment variables; neve=
+r hardcode credentials.</div></li></ul></div></div>
+
+--0000000000009a48f7065db77e1c--
