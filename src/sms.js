@@ -8,9 +8,17 @@ const SMS_LIMIT = 160;
 // 160 karakterlik tek segmenti korumak için ASCII'ye çeviriyoruz.
 const TRANSLIT = { ç: 'c', Ç: 'C', ğ: 'g', Ğ: 'G', ı: 'i', İ: 'I', ö: 'o', Ö: 'O', ş: 's', Ş: 'S', ü: 'u', Ü: 'U', '₺': 'TL', '€': 'EUR' };
 
+// GSM-7'de [ ] { } \ ^ ~ | kaçış karakteriyle gider ve iki karakter yer tutar; ` hiç yoktur.
+const GSM_EXTENDED = /[\^{}\\[\]~|]/g;
+
+export function gsmLength(text) {
+  return text.length + (text.match(GSM_EXTENDED)?.length ?? 0);
+}
+
 export function toGsmSafe(text) {
   return text
     .replace(/[çÇğĞıİöÖşŞüÜ₺€]/g, (c) => TRANSLIT[c])
+    .replace(/`/g, "'")
     .normalize('NFKD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^\x20-\x7E\n]/g, '')
@@ -19,12 +27,14 @@ export function toGsmSafe(text) {
 }
 
 function fit(text) {
-  const safe = toGsmSafe(text);
-  return safe.length <= SMS_LIMIT ? safe : `${safe.slice(0, SMS_LIMIT - 3)}...`;
+  let safe = toGsmSafe(text);
+  if (gsmLength(safe) <= SMS_LIMIT) return safe;
+  while (gsmLength(safe) > SMS_LIMIT - 3) safe = safe.slice(0, -1);
+  return `${safe}...`;
 }
 
 function shorten(value, max) {
-  return value.length <= max ? value : `${value.slice(0, Math.max(0, max - 1))}~`;
+  return value.length <= max ? value : `${value.slice(0, Math.max(0, max - 1))}.`;
 }
 
 export const templates = {
@@ -36,22 +46,24 @@ export const templates = {
     let k = toGsmSafe(keyword);
     let a = toGsmSafe(amount);
 
+    const over = (m) => gsmLength(m) - SMS_LIMIT;
+
     let msg = full(k, a);
-    if (msg.length > SMS_LIMIT) msg = full(shorten(k, Math.max(8, k.length - (msg.length - SMS_LIMIT))), a);
-    if (msg.length <= SMS_LIMIT) return msg;
+    if (over(msg) > 0) msg = full(shorten(k, Math.max(8, k.length - over(msg))), a);
+    if (over(msg) <= 0) return msg;
 
     msg = compact(k, a);
-    if (msg.length > SMS_LIMIT) {
-      k = shorten(k, Math.max(8, k.length - (msg.length - SMS_LIMIT)));
+    if (over(msg) > 0) {
+      k = shorten(k, Math.max(8, k.length - over(msg)));
       msg = compact(k, a);
     }
-    if (msg.length > SMS_LIMIT) {
-      a = shorten(a, Math.max(8, a.length - (msg.length - SMS_LIMIT)));
+    if (over(msg) > 0) {
+      a = shorten(a, Math.max(8, a.length - over(msg)));
       msg = compact(k, a);
     }
-    if (msg.length > SMS_LIMIT) {
+    if (over(msg) > 0) {
       // URL tek başına bütçeyi aşıyor; link bütün gider (2 segment).
-      logger.warn(`SMS ${msg.length} karakter; URL çok uzun. EVIDENCE_PUBLIC_BASE_URL ile kısalt.`);
+      logger.warn(`SMS ${gsmLength(msg)} karakter; URL çok uzun. EVIDENCE_PUBLIC_BASE_URL ile kısalt.`);
     }
     return msg;
   },
@@ -95,7 +107,7 @@ export class SmsNotifier {
           throw err;
         }
       });
-      logger.info(`SMS gönderildi sid=${msg.sid} status=${msg.status} (${body.length} karakter)`);
+      logger.info(`SMS gönderildi sid=${msg.sid} status=${msg.status} (${gsmLength(body)} karakter)`);
       return msg;
     } catch (err) {
       logger.error(`SMS gönderilemedi: ${err.message}`, { body });
