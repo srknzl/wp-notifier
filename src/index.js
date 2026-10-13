@@ -37,29 +37,39 @@ session.on('critical', (reason) => {
 const CRASH_ALERT_COOLDOWN_MS = 60 * 60_000;
 const crashStamp = join(config.dataDir, 'last-crash-alert');
 
-function crashAlertDue() {
+function crashAlertSentRecently() {
   try {
-    if (Date.now() - statSync(crashStamp).mtimeMs < CRASH_ALERT_COOLDOWN_MS) return false;
+    return Date.now() - statSync(crashStamp).mtimeMs < CRASH_ALERT_COOLDOWN_MS;
   } catch {
-    // damga yok: ilk çöküş
+    return false;
   }
+}
+
+// Damga yalnızca SMS gerçekten gidince yazılır; gitmediyse sonraki açılış yeniden dener.
+function markCrashAlertSent() {
   try {
     writeFileSync(crashStamp, new Date().toISOString());
   } catch (err) {
     logger.warn(`Çöküş damgası yazılamadı: ${err.message}`);
   }
-  return true;
 }
 
 // Beklenmeyen çökme: SMS at ve çık, PM2/Docker yeniden başlatsın.
+let dying = false;
 async function fatal(err) {
   logger.error(`Ölümcül hata: ${err?.stack || err}`);
+  // Çöküş genelde art arda birkaç hata üretir; ilki SMS'i bitirip çıkar, sonrakiler onu kesmez.
+  if (dying) return;
+  dying = true;
   try {
-    if (!crashAlertDue()) {
+    if (crashAlertSentRecently()) {
       logger.warn('Çöküş SMSi son bir saat içinde gönderildi, tekrar gönderilmiyor');
       return;
     }
-    await Promise.race([sms.send(templates.processError({ reason: err?.message || String(err) })), new Promise((r) => setTimeout(r, 15_000))]);
+    const sent = sms.send(templates.processError({ reason: err?.message || String(err) })).then(markCrashAlertSent);
+    await Promise.race([sent, new Promise((r) => setTimeout(r, 15_000))]);
+  } catch {
+    // gönderim hatası SmsNotifier içinde loglandı
   } finally {
     process.exit(1);
   }

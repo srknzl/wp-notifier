@@ -1,8 +1,16 @@
 import { createCanvas } from '@napi-rs/canvas';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
+// Sondaki (?!...) tarih gibi dizileri (15.11.2026, 15/11/2026) tutar sanmayı önler.
 const AMOUNT_RE =
-  /(?:[$€£₺]\s?|(?:TL|TRY|USD|EUR)\s)?-?\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d{1,2})?(?:\s?(?:TL|TRY|USD|EUR|[$€£₺]))?|-?\d+(?:[.,]\d{1,2})?/g;
+  /(?:[$€£₺]\s?|(?:TL|TRY|USD|EUR)\s)?-?(?:\d{1,3}(?:[.,\s']\d{3})+(?!\d)|\d+)(?:[.,]\d{1,2})?(?![.,/-]?\d)(?:\s?(?:TL|TRY|USD|EUR|[$€£₺]))?/g;
+// Kuruş hanesi ya da para birimi taşıyan sayı; sayfa no, yüzde, gün sayısı gibi sayılardan ayırır.
+const MONEY_RE = /[.,]\d{2}(?!\d)|[$€£₺]|TL|TRY|USD|EUR/;
+
+function pickAmount(text) {
+  const found = [...text.matchAll(AMOUNT_RE)].map((m) => m[0].trim()).filter((s) => /\d/.test(s));
+  return found.findLast((s) => MONEY_RE.test(s)) ?? found.at(-1) ?? null;
+}
 
 export class UnreadablePdfError extends Error {
   constructor() {
@@ -40,10 +48,7 @@ function groupLines(items, tolerance = 2) {
 }
 
 export function extractAmount(lineText, matchEnd = 0) {
-  const after = [...lineText.slice(matchEnd).matchAll(AMOUNT_RE)].map((m) => m[0].trim()).filter((s) => /\d/.test(s));
-  if (after.length) return after[after.length - 1];
-  const all = [...lineText.matchAll(AMOUNT_RE)].map((m) => m[0].trim()).filter((s) => /\d/.test(s));
-  return all.length ? all[all.length - 1] : null;
+  return pickAmount(lineText.slice(matchEnd)) ?? pickAmount(lineText);
 }
 
 export class PdfExtractor {

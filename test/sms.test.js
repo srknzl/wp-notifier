@@ -40,6 +40,19 @@ test('tutar satırdan çıkarılır', () => {
   assert.equal(extractAmount('Amount payable', 14), null);
 });
 
+test('binlik ayırıcısız tutar parçalanmaz', () => {
+  assert.equal(extractAmount('Total Due 1620.00', 9), '1620.00');
+  assert.equal(extractAmount('Total Due 12500', 9), '12500');
+  assert.equal(extractAmount('Total Due 1620,5 TL', 9), '1620,5 TL');
+});
+
+test('satırdaki tarih, yüzde ve sayfa numarası tutar sanılmaz', () => {
+  assert.equal(extractAmount('Total Due: $1,620.00 Due Date: 15/11/2026', 9), '$1,620.00');
+  assert.equal(extractAmount('Total Due 1.620,00 TL Vade 15.11.2026', 9), '1.620,00 TL');
+  assert.equal(extractAmount('Total Due 1,180.00 (incl. VAT 18%)', 9), '1,180.00');
+  assert.equal(extractAmount('Total Due 1,620.00 Page 1 of 2', 9), '1,620.00');
+});
+
 test('kanıt dosya adı evidence/YYYYMMDD_UUID.png biçiminde', () => {
   assert.match(evidenceKey(new Date('2026-10-13T12:00:00Z')), /^evidence\/20261013_[0-9a-f-]{36}\.png$/);
 });
