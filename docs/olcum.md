@@ -15,7 +15,7 @@ Kaynak: `get_usage` (Max planı), 2026-10-21. Sayılar uygulamanın kullanım ka
 - Bütün oturum: 5 saatlik +56 puan, haftalık +15 puan.
 - 02–06 toplu işi: 5 saatlik +51 puan, haftalık +13 puan.
 - Ara okumadan sona (05, 06, kapanış): 5 saatlik +40, haftalık +10.
-- 5 saatlik pencere 2026-10-21 15:40'ta (yerel) sıfırlanıyor; okumaların hepsi aynı pencerede.
+- 5 saatlik pencere 10:40–15:40 (yerel). Oturum başı okumasının bu pencerede alındığı doğrulanmadı; pencere arada sıfırlandıysa gerçek tüketim daha yüksektir.
 - Görev başına ayrı ölçüm alınmadı; yukarıdaki ara noktalar dışında bölüştürme tahmin olur.
 - Bağlam penceresi: 184.685 / 225.000 token (%82), otomatik sıkıştırma %85'te. Oturum bir kez sıkıştırıldı.
 
