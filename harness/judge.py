@@ -6,7 +6,7 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
-CODE_SUFFIXES = {".py", ".go", ".rs", ".ts", ".js", ".java", ".kt", ".c", ".cc", ".cpp", ".h", ".hpp",
+CODE_SUFFIXES = {".py", ".go", ".rs", ".ts", ".js", ".java", ".kt", ".cs", ".csproj", ".c", ".cc", ".cpp", ".h", ".hpp",
                  ".md", ".txt", ".toml", ".json", ".yaml", ".yml", ".sql"}
 MAX_BYTES = 80_000
 
@@ -27,7 +27,7 @@ def collect_submission(solution: Path) -> str:
     for path in sorted(solution.rglob("*")):
         if not path.is_file() or path.suffix.lower() not in CODE_SUFFIXES:
             continue
-        if any(p.startswith(".") or p in {"__pycache__", "node_modules", "target", "build"} for p in path.parts):
+        if any(p.startswith(".") or p in {"__pycache__", "node_modules", "target", "build", "out"} for p in path.parts):
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         chunk = f"--- FILE: {path.relative_to(solution).as_posix()} ---\n{text}\n"

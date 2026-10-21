@@ -94,7 +94,7 @@ def stage_tests(cdir: Path, dest: Path, hidden: bool) -> None:
         vault.extract(cdir.name, cdir / "vault.bin", dest / "hidden", prefix="hidden/")
 
 
-IGNORE = shutil.ignore_patterns("target", "node_modules", ".revealed", "__pycache__", ".git", "build", "bin", "obj")
+IGNORE = shutil.ignore_patterns("out", "target", "node_modules", ".revealed", "__pycache__", ".git", "build", "bin", "obj")
 
 
 def _fmt(args: list[str], **kw) -> list[str]:

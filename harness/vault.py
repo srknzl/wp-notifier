@@ -30,7 +30,7 @@ def _xor(data: bytes, stream: bytes) -> bytes:
     return (int.from_bytes(data, "big") ^ int.from_bytes(stream, "big")).to_bytes(n, "big") if n else b""
 
 
-SKIP = {"__pycache__", "target", "node_modules", "build", "bin", "obj", ".gradle", "Cargo.lock"}
+SKIP = {"__pycache__", "out", "target", "node_modules", "build", "bin", "obj", ".gradle", "Cargo.lock"}
 
 
 def seal(challenge_id: str, src_dir: Path, out_file: Path) -> int:

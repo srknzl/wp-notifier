@@ -1,0 +1,21 @@
+id = "05-lru-cache-server"
+title = "Memory-Bounded LRU Cache Server"
+language = "java"
+difficulty = "medium-hard"
+timeout_s = 600
+build_timeout_s = 300
+cpus = "2"
+memory = "1g"
+build_cmd = ["javac", "-d", "out", "--source-path", "src", "src/Cache.java"]
+run_cmd = ["java", "-Xmx192m", "-Xss512k", "-cp", "{solution}/out", "Cache"]
+test_cmd = ["{python}", "-m", "pytest", "-q", "-p", "no:cacheprovider", "--rootdir={tests}", "--junitxml={out}/results.xml", "-o", "junit_family=xunit1", "{tests}"]
+
+[weights]
+correctness = 25
+concurrency = 25
+memory = 25
+scalability = 25
+
+[score]
+tests = 70
+judge = 30

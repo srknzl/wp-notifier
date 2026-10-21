@@ -30,6 +30,11 @@ comparable. `--no-judge` skips the LLM review.
 | ID | Language | Focus |
 |---|---|---|
 | 01-rate-limiter | Python | Distributed token bucket over a CAS-only store: exactness under contention, flaky store, clock skew, TTL-bounded memory |
+| 02-crash-safe-kv | Rust | Log-structured KV store: durable acks, atomic recovery after kill -9, torn-write handling, bounded disk via crash-safe compaction |
+| 03-job-queue | Python | Fair multi-tenant queue with leases: at-least-once delivery, lease expiry and fencing tokens, per-tenant fairness, bounded memory |
+| 04-event-ledger | TypeScript (Node 24) | Event-sourced ledger: no double spend, idempotency keys, group commit with an fsync barrier, crash recovery |
+| 05-lru-cache-server | Java 21 | TCP cache server: exact LRU under a byte budget, TTL sweeping, atomic INCR, `-Xmx192m` without OOM, slow-client isolation |
+| 06-coalescing-proxy | C# (.NET 10) | HTTP proxy: request coalescing, stale-while-revalidate, bounded backend concurrency, timeouts, circuit breaker with one probe |
 
 ## Scoring
 
