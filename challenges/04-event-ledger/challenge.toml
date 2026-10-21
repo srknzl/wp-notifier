@@ -1,0 +1,19 @@
+id = "04-event-ledger"
+title = "Event-Sourced Ledger Service"
+language = "typescript"
+difficulty = "medium-hard"
+timeout_s = 600
+cpus = "2"
+memory = "1g"
+run_cmd = ["node", "--experimental-strip-types", "--disable-warning=ExperimentalWarning", "{solution}/src/server.ts"]
+test_cmd = ["{python}", "-m", "pytest", "-q", "-p", "no:cacheprovider", "--rootdir={tests}", "--junitxml={out}/results.xml", "-o", "junit_family=xunit1", "{tests}"]
+
+[weights]
+correctness = 25
+concurrency = 30
+durability = 30
+scalability = 15
+
+[score]
+tests = 70
+judge = 30

@@ -1,0 +1,18 @@
+id = "03-job-queue"
+title = "Fair Job Queue With Leases"
+language = "python"
+difficulty = "medium-hard"
+timeout_s = 300
+cpus = "2"
+memory = "1g"
+test_cmd = ["{python}", "-m", "pytest", "-q", "-p", "no:cacheprovider", "--rootdir={tests}", "--junitxml={out}/results.xml", "-o", "junit_family=xunit1", "{tests}"]
+
+[weights]
+correctness = 30
+reliability = 30
+concurrency = 20
+scalability = 20
+
+[score]
+tests = 70
+judge = 30

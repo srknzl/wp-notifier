@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -93,41 +94,65 @@ def stage_tests(cdir: Path, dest: Path, hidden: bool) -> None:
         vault.extract(cdir.name, cdir / "vault.bin", dest / "hidden", prefix="hidden/")
 
 
+IGNORE = shutil.ignore_patterns("target", "node_modules", ".revealed", "__pycache__", ".git", "build", "bin", "obj")
+
+
+def _fmt(args: list[str], **kw) -> list[str]:
+    return [a.format(**kw) for a in args]
+
+
 def run_tests(cdir: Path, cfg: dict, solution: Path, hidden: bool, local: bool) -> RunResult:
     categories = list(cfg["weights"].keys())
     timeout = int(cfg.get("timeout_s", 300))
     started = time.time()
     with tempfile.TemporaryDirectory(prefix="sdc-") as tmp:
         base = Path(tmp).resolve()
-        tests = base / "tests"
-        out = base / "out"
+        tests, out, sol = base / "tests", base / "out", base / "solution"
         out.mkdir()
+        shutil.copytree(solution, sol, ignore=IGNORE)
         stage_tests(cdir, tests, hidden)
         if local:
-            cmd = [a.format(python=sys.executable, tests=str(tests), out=str(out)) for a in cfg["test_cmd"]]
-            env = dict(os.environ, PYTHONPATH=str(solution.resolve()), SDC_SOLUTION=str(solution.resolve()),
-                       PYTHONDONTWRITEBYTECODE="1")
-            kill = None
+            paths = dict(python=sys.executable, tests=str(tests), out=str(out), solution=str(sol))
+        else:
+            paths = dict(python="python3", tests="/work/tests", out="/work/out", solution="/work/solution")
+        run_cmd = json.dumps(_fmt(cfg.get("run_cmd", []), **paths))
+        build = _fmt(cfg.get("build_cmd", []), **paths)
+        test = _fmt(cfg["test_cmd"], **paths)
+        envs = {"PYTHONPATH": paths["solution"], "SDC_SOLUTION": paths["solution"], "SDC_RUN": run_cmd,
+                "PYTHONDONTWRITEBYTECODE": "1"}
+        if local:
+            env = dict(os.environ, **envs)
+            if build:
+                b = subprocess.run(build, capture_output=True, text=True, cwd=sol, env=env,
+                                   timeout=int(cfg.get("build_timeout_s", 600)), shell=sys.platform == "win32")
+                if b.returncode != 0:
+                    return RunResult([], frozen=False, log="BUILD FAILED\n" + b.stdout + b.stderr,
+                                     seconds=time.time() - started)
+            cmd, kill = test, None
         else:
             tag = _image_tag(cdir, solution)
             _build(cdir, solution, tag)
+            limits = ["--cpus", str(cfg.get("cpus", "2")), "--memory", str(cfg.get("memory", "1g"))]
+            envflags = [x for k, v in envs.items() for x in ("-e", f"{k}={v}")]
+            if build:
+                b = subprocess.run(["docker", "run", "--rm", *limits, *envflags, "-v", f"{sol}:/work/solution",
+                                    "-w", "/work/solution", tag, *build], capture_output=True, text=True,
+                                   timeout=int(cfg.get("build_timeout_s", 600)))
+                if b.returncode != 0:
+                    return RunResult([], log="BUILD FAILED\n" + b.stdout + b.stderr, seconds=time.time() - started)
             name = f"sdc-run-{uuid.uuid4().hex[:8]}"
-            inner = [a.format(python="python", tests="/work/tests", out="/work/out") for a in cfg["test_cmd"]]
-            cmd = ["docker", "run", "--rm", "--name", name, "--network", "none",
-                   "--cpus", str(cfg.get("cpus", "2")), "--memory", str(cfg.get("memory", "1g")),
-                   "-e", "PYTHONPATH=/work/solution", "-e", "SDC_SOLUTION=/work/solution",
-                   "-v", f"{solution.resolve()}:/work/solution:ro",
-                   "-v", f"{tests}:/work/tests:ro", "-v", f"{out}:/work/out", tag, *inner]
+            cmd = ["docker", "run", "--rm", "--name", name, "--network", "none", *limits, *envflags,
+                   "-v", f"{sol}:/work/solution:ro", "-v", f"{tests}:/work/tests:ro", "-v", f"{out}:/work/out",
+                   "-w", "/work/solution", tag, *test]
             env = None
             kill = ["docker", "kill", name]
         timed_out = False
         try:
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env,
-                                  cwd=str(solution.resolve()))
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env, cwd=sol)
             log = proc.stdout + proc.stderr
         except subprocess.TimeoutExpired as exc:
             timed_out = True
-            log = (exc.stdout or "") if isinstance(exc.stdout, str) else ""
+            log = exc.stdout if isinstance(exc.stdout, str) else ""
             if kill:
                 subprocess.run(kill, capture_output=True)
         results = parse_junit(out / "results.xml", categories)

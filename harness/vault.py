@@ -30,11 +30,14 @@ def _xor(data: bytes, stream: bytes) -> bytes:
     return (int.from_bytes(data, "big") ^ int.from_bytes(stream, "big")).to_bytes(n, "big") if n else b""
 
 
+SKIP = {"__pycache__", "target", "node_modules", "build", "bin", "obj", ".gradle", "Cargo.lock"}
+
+
 def seal(challenge_id: str, src_dir: Path, out_file: Path) -> int:
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         for path in sorted(src_dir.rglob("*")):
-            if path.is_file() and "__pycache__" not in path.parts:
+            if path.is_file() and not SKIP.intersection(path.relative_to(src_dir).parts):
                 zf.write(path, path.relative_to(src_dir).as_posix())
     plain = buf.getvalue()
     key = _key(challenge_id)
