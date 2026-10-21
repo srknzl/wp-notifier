@@ -1,0 +1,9 @@
+.vault-src/
+workspace/
+.progress/
+.venv/
+tmp/
+trash/
+__pycache__/
+*.pyc
+.claude/
