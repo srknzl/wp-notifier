@@ -10,3 +10,4 @@ if ($processes) {
 } else {
     Write-Host "Çalışan wp-notifier işlemi bulunamadı."
 }
+

@@ -27,3 +27,4 @@ Write-Host "Konum: $targetFile"
 Write-Host "Çalışma Dizini: $projectDir"
 Write-Host "Log Dosyası: $projectDir\data\app.log"
 Write-Host "Artık bilgisayar her açıldığında bot arka planda sessizce otomatik başlayacaktır."
+

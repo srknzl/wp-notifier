@@ -11,8 +11,22 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
 
   return async function handleMessage(msg) {
     const target = config.whatsapp.targetGroupId;
-    const isTarget = msg.from === target || (msg.fromMe && msg.to === target);
+    const isTarget = session?.isTargetChat
+      ? session.isTargetChat(msg.from) || (msg.fromMe && session.isTargetChat(msg.to))
+      : msg.from === target || (msg.fromMe && msg.to === target);
+
     if (!isTarget) return;
+
+    // Botun kendi gönderdiği bildirimleri sonsuz döngüye girmemesi için atla
+    const textContent = msg._data?.caption || msg.body || '';
+    if (
+      textContent.startsWith('📋 *[BİLDİRİM]') ||
+      textContent.startsWith('[ALERT]') ||
+      textContent.startsWith('⚠️ *[UYARI]') ||
+      textContent.startsWith('ℹ️ *[BİLGİ]')
+    ) {
+      return;
+    }
 
     // Her incelenen mesajda checkpoint güncelle (kaldığı yer kaydı)
     if (checkpoint && msg.timestamp) {

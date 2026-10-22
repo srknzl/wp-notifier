@@ -29,6 +29,7 @@ export class SessionManager extends EventEmitter {
     this.recovering = false;
     this.alerted = false;
     this.heartbeatTimer = null;
+    this.selfChatId = null;
   }
 
   async start() {
@@ -41,13 +42,14 @@ export class SessionManager extends EventEmitter {
     await this.#destroyClient();
   }
 
-  getDestinationChatId() {
-    if (!this.client || !this.ready) return null;
-    const dest = this.alertDestination;
-    if (!dest || dest === 'self' || dest === 'me') {
-      return this.client.info?.wid?._serialized;
+  getTargetChatId() {
+    if (!this.client || !this.ready) return this.targetGroupId;
+    const target = this.targetGroupId;
+    if (!target || target === 'self' || target === 'me') {
+      return this.selfChatId || this.client.info?.wid?._serialized;
     }
-    const digits = dest.replace(/\D/g, '');
+    if (target.includes('@')) return target;
+    const digits = target.replace(/\D/g, '');
     if (!digits) return this.client.info?.wid?._serialized;
     const clean = digits.length === 11 && digits.startsWith('05')
       ? `9${digits}`
@@ -55,6 +57,34 @@ export class SessionManager extends EventEmitter {
         ? `90${digits}`
         : digits;
     return `${clean}@c.us`;
+  }
+
+  getDestinationChatId() {
+    if (!this.client || !this.ready) return null;
+    const dest = this.alertDestination;
+    if (!dest || dest === 'self' || dest === 'me') {
+      return this.selfChatId || this.client.info?.wid?._serialized;
+    }
+    if (dest.includes('@')) return dest;
+    const digits = dest.replace(/\D/g, '');
+    if (!digits) return this.selfChatId || this.client.info?.wid?._serialized;
+    const clean = digits.length === 11 && digits.startsWith('05')
+      ? `9${digits}`
+      : digits.length === 10 && digits.startsWith('5')
+        ? `90${digits}`
+        : digits;
+    return `${clean}@c.us`;
+  }
+
+  isTargetChat(chatId) {
+    if (!chatId) return false;
+    const target = this.getTargetChatId();
+    if (chatId === target) return true;
+    if (this.targetGroupId === 'self' || this.targetGroupId === 'me') {
+      const selfWid = this.client?.info?.wid?._serialized;
+      if (chatId === selfWid || (this.selfChatId && chatId === this.selfChatId)) return true;
+    }
+    return false;
   }
 
   /**
@@ -84,8 +114,12 @@ export class SessionManager extends EventEmitter {
     if (!this.client || !this.ready) {
       throw new Error('WhatsApp istemcisi hazır değil');
     }
+    const resolvedChatId = targetChatId === 'self' || targetChatId === 'me'
+      ? (this.selfChatId || this.client.info?.wid?._serialized)
+      : targetChatId;
+
     const sinceText = sinceTimestamp > 0 ? new Date(sinceTimestamp * 1000).toLocaleString('tr-TR') : 'tüm geçmiş';
-    logger.info(`Geçmiş mesajlar taranıyor: ${targetChatId} (Başlangıç: ${sinceText})`);
+    logger.info(`Geçmiş mesajlar taranıyor: ${resolvedChatId} (Başlangıç: ${sinceText})`);
 
     const msgList = await this.client.pupPage.evaluate(async (chatId, minT) => {
       const chat = await window.WWebJS.getChat(chatId, { getAsModel: false });
@@ -109,14 +143,13 @@ export class SessionManager extends EventEmitter {
         .filter((m) => {
           if (m.isNotification) return false;
           if (minT > 0 && m.t <= minT) return false;
-          // Alakasız mesajları (metin, ses, çıkartma) hemen ele; sadece resim/döküman al
           const isDocOrImg = m.type === 'image' || m.type === 'document' || m.hasMedia;
           return isDocOrImg;
         })
         .sort((a, b) => (a.t > b.t ? 1 : -1));
 
       return candidates.map((m) => ({ id: m.id?._serialized, t: m.t }));
-    }, targetChatId, sinceTimestamp);
+    }, resolvedChatId, sinceTimestamp);
 
     if (!msgList || !msgList.length) {
       logger.info('İncelenecek yeni geçmiş medya mesajı bulunamadı.');
@@ -151,7 +184,6 @@ export class SessionManager extends EventEmitter {
 
     client.on('qr', (qr) => {
       if (this.everAuthenticated) {
-        // Oturum daha önce açıktı ve şimdi QR istiyor: cihaz bağlantısı kopmuş.
         this.#critical('Session invalidated, new QR requested');
       }
       logger.info('QR kodu WhatsApp > Bağlı cihazlar ekranından okut:');
@@ -161,9 +193,16 @@ export class SessionManager extends EventEmitter {
       this.everAuthenticated = true;
       logger.info('WhatsApp: authenticated');
     });
-    client.on('ready', () => {
+    client.on('ready', async () => {
       this.ready = true;
       this.alerted = false;
+      try {
+        const selfChat = await client.pupPage.evaluate(async (wid) => {
+          const c = await window.WWebJS.getChat(wid, { getAsModel: false });
+          return c?.id?._serialized;
+        }, client.info?.wid?._serialized);
+        this.selfChatId = selfChat;
+      } catch {}
       logger.info(`WhatsApp: ready (Bağlı numara: ${client.info?.wid?.user})`);
       this.emit('ready');
     });
@@ -176,7 +215,6 @@ export class SessionManager extends EventEmitter {
       this.ready = false;
       logger.warn(`WhatsApp: disconnected (${reason})`);
       if (reason === 'LOGOUT') {
-        // Telefondan çıkış yapıldı; yeniden bağlanmak QR gerektirir.
         this.#critical('Logged out from phone (LOGOUT)');
       } else {
         this.#recover(`disconnected: ${reason}`);
@@ -184,8 +222,8 @@ export class SessionManager extends EventEmitter {
     });
     client.on('message', (msg) => this.emit('message', msg));
     client.on('message_create', (msg) => {
-      // Kullanıcı testi kendi telefonundan hedef sohbete PDF göndererek yapıyorsa da yakala
-      if (msg.fromMe && (msg.to === this.targetGroupId || msg.to === this.getDestinationChatId())) {
+      // Kendimize veya hedef sohbete gönderilen mesajları da yakala
+      if (msg.fromMe && (this.isTargetChat(msg.to) || this.isTargetChat(msg.from))) {
         this.emit('message', msg);
       }
     });
@@ -193,7 +231,6 @@ export class SessionManager extends EventEmitter {
   }
 
   async #initClient() {
-    // Chromium çöktüyse profil kilidi kalır ve yeni tarayıcı açılmaz.
     for (const lock of ['SingletonLock', 'SingletonCookie', 'SingletonSocket']) {
       rmSync(join(this.sessionDataPath, 'session', lock), { force: true });
     }
@@ -259,7 +296,6 @@ export class SessionManager extends EventEmitter {
   }
 
   #critical(reason) {
-    // Aynı kesinti için tekrar tekrar bildirim atma; 'ready' gelince sıfırlanır.
     if (this.alerted) return;
     this.alerted = true;
     this.emit('critical', reason);
