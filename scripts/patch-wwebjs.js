@@ -1,13 +1,13 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-// 1. Patch Utils.js
+// 1. Utils.js dosyasını yamala
 const utilsFile = join('node_modules', 'whatsapp-web.js', 'src', 'util', 'Injected', 'Utils.js');
 if (existsSync(utilsFile)) {
   let content = readFileSync(utilsFile, 'utf8');
   let changed = false;
 
-  // Media send fix
+  // Medya gönderimi düzeltmesi
   if (!content.includes('delete message.__x_id;')) {
     content = content.replace(
       "        // Bot's won't reply if canonicalUrl is set (linking)",
@@ -16,7 +16,7 @@ if (existsSync(utilsFile)) {
     changed = true;
   }
 
-  // Ensure msg.id._serialized is always present in getMessageModel
+  // getMessageModel fonksiyonunda msg.id._serialized alanının daima bulunmasını sağla
   if (!content.includes('msg.id._serialized = message.id?._serialized')) {
     content = content.replace(
       "window.WWebJS.getMessageModel = (message) => {\n        const msg = message.serialize();",
@@ -31,13 +31,13 @@ if (existsSync(utilsFile)) {
   }
 }
 
-// 2. Patch Message.js
+// 2. Message.js dosyasını yamala
 const msgFile = join('node_modules', 'whatsapp-web.js', 'src', 'structures', 'Message.js');
 if (existsSync(msgFile)) {
   let content = readFileSync(msgFile, 'utf8');
   let changed = false;
 
-  // Fix downloadMedia mimetype
+  // downloadMedia mimetype düzeltmesi
   if (!content.includes('mimetype: msg.mimetype,')) {
     content = content.replace(
       '                        type: msg.type,\n                        signal: new AbortController().signal,',
@@ -46,7 +46,7 @@ if (existsSync(msgFile)) {
     changed = true;
   }
 
-  // Fix this.id._serialized fallback in _patch
+  // _patch fonksiyonunda this.id._serialized yedeği düzeltmesi
   if (!content.includes('this.id._serialized = this.id.$1')) {
     content = content.replace(
       '        this.id = data.id;\n\n        /**',

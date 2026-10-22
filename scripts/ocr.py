@@ -1,3 +1,7 @@
+"""
+RapidOCR (ONNX) kullanarak görseldeki tüm metin bloklarını ve koordinatlarını JSON olarak döndürür.
+Kullanım: python scripts/ocr.py <resim_dosyasi>
+"""
 import sys
 import json
 from rapidocr_onnxruntime import RapidOCR

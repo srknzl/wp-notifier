@@ -191,14 +191,14 @@ export class SessionManager extends EventEmitter {
 
     client.on('qr', (qr) => {
       if (this.everAuthenticated) {
-        this.#critical('Session invalidated, new QR requested');
+        this.#critical('Oturum sonlandı, yeni QR kodu istendi');
       }
       logger.info('QR kodu WhatsApp > Bağlı cihazlar ekranından okut:');
       qrcode.generate(qr, { small: true });
     });
     client.on('authenticated', () => {
       this.everAuthenticated = true;
-      logger.info('WhatsApp: authenticated');
+      logger.info('WhatsApp: Kimlik doğrulandı (authenticated)');
     });
     client.on('ready', async () => {
       this.ready = true;
@@ -210,21 +210,21 @@ export class SessionManager extends EventEmitter {
         }, client.info?.wid?._serialized);
         this.selfChatId = selfChat;
       } catch {}
-      logger.info(`WhatsApp: ready (Bağlı numara: ${client.info?.wid?.user})`);
+      logger.info(`WhatsApp: Hazır (ready) (Bağlı numara: ${client.info?.wid?.user})`);
       this.emit('ready');
     });
     client.on('auth_failure', (msg) => {
       this.ready = false;
-      logger.error(`WhatsApp: auth_failure ${msg}`);
-      this.#critical(`auth_failure: ${msg}`);
+      logger.error(`WhatsApp: Kimlik doğrulama hatası (auth_failure) ${msg}`);
+      this.#critical(`Kimlik doğrulama hatası: ${msg}`);
     });
     client.on('disconnected', (reason) => {
       this.ready = false;
-      logger.warn(`WhatsApp: disconnected (${reason})`);
+      logger.warn(`WhatsApp: Bağlantı koptu (disconnected) (${reason})`);
       if (reason === 'LOGOUT') {
-        this.#critical('Logged out from phone (LOGOUT)');
+        this.#critical('Telefondan oturum kapatıldı (LOGOUT)');
       } else {
-        this.#recover(`disconnected: ${reason}`);
+        this.#recover(`Bağlantı koptu: ${reason}`);
       }
     });
     client.on('message', (msg) => this.emit('message', msg));
@@ -266,9 +266,9 @@ export class SessionManager extends EventEmitter {
       const state = await withTimeout(this.client.getState(), this.heartbeatTimeoutMs, 'getState');
       if (state !== 'CONNECTED') {
         logger.warn(`Heartbeat: durum ${state}`);
-        await this.#recover(`state=${state}`);
+        await this.#recover(`durum=${state}`);
       } else {
-        logger.info('Heartbeat: CONNECTED');
+        logger.info('Heartbeat: BAĞLI (CONNECTED)');
       }
     } catch (err) {
       logger.warn(`Heartbeat başarısız: ${err.message}`);
@@ -296,7 +296,7 @@ export class SessionManager extends EventEmitter {
           logger.warn(`Yeniden bağlanma denemesi başarısız: ${err.message}`);
         }
       }
-      this.#critical(`${reason}; ${this.reconnectDelaysMs.length} reconnect attempts failed`);
+      this.#critical(`${reason}; ${this.reconnectDelaysMs.length} yeniden bağlanma denemesi başarısız oldu`);
     } finally {
       this.recovering = false;
     }

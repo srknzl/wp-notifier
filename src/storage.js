@@ -22,7 +22,7 @@ export class StorageService {
 
   async uploadPng(buffer) {
     const key = evidenceKey();
-    await withRetry('S3 upload', () =>
+    await withRetry('S3 yükleme', () =>
       this.s3.send(
         new PutObjectCommand({
           Bucket: this.bucket,

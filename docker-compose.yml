@@ -4,9 +4,11 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      # Oturum ve veri dizinleri
       SESSION_DATA_PATH: /app/.wwebjs_auth
       DATA_DIR: /app/data
     volumes:
       - ./.wwebjs_auth:/app/.wwebjs_auth
       - ./data:/app/data
+    # Chromium'un kilitlenmesini önlemek için paylaşılan bellek boyutu
     shm_size: 1gb
