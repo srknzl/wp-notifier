@@ -9,9 +9,9 @@ $projectDir = (Get-Item $PSScriptRoot).Parent.FullName
 if ($Uninstall) {
     if (Test-Path $targetFile) {
         Remove-Item -Force $targetFile
-        Write-Host "Otomatik başlatma kaldırıldı." -ForegroundColor Yellow
+        Write-Host "Autostart removed." -ForegroundColor Yellow
     } else {
-        Write-Host "Otomatik başlatma zaten kurulu değil."
+        Write-Host "Autostart is not installed."
     }
     return
 }
@@ -22,9 +22,8 @@ WshShell.Run "powershell.exe -WindowStyle Hidden -Command ""Set-Location '$proje
 "@
 
 [System.IO.File]::WriteAllText($targetFile, $vbsContent)
-Write-Host "wp-notifier Windows başlangıcına başarıyla eklendi!" -ForegroundColor Green
-Write-Host "Konum: $targetFile"
-Write-Host "Çalışma Dizini: $projectDir"
-Write-Host "Log Dosyası: $projectDir\data\app.log"
-Write-Host "Artık bilgisayar her açıldığında bot arka planda sessizce otomatik başlayacaktır."
-
+Write-Host "wp-notifier successfully added to Windows Startup!" -ForegroundColor Green
+Write-Host "Location: $targetFile"
+Write-Host "Working Directory: $projectDir"
+Write-Host "Log File: $projectDir\data\app.log"
+Write-Host "The bot will now start silently in the background on every user login."

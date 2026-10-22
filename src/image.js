@@ -22,7 +22,7 @@ async function getPythonBin() {
       return bin;
     } catch {}
   }
-  logger.warn('RapidOCR (rapidocr_onnxruntime) bulunamadı! Görsellerin doğru okunabilmesi için "pip install -r requirements.txt" çalıştırın.');
+  logger.warn('RapidOCR (rapidocr_onnxruntime) not found! Run "pip install -r requirements.txt" to accurately parse images.');
   return null;
 }
 
@@ -37,7 +37,7 @@ export class ImageExtractor {
   async #getWorker() {
     if (!this.workerPromise) {
       this.workerPromise = (async () => {
-        logger.info('OCR motoru hazırlanıyor (tur+eng)...');
+        logger.info('Initializing OCR engine (tur+eng)...');
         const worker = await createWorker(['tur', 'eng']);
         this.worker = worker;
         return worker;
@@ -47,7 +47,7 @@ export class ImageExtractor {
   }
 
   /**
-   * Düşük çözünürlüklü ve zorlu görseller için RapidOCR (ONNX) ile satır ve tutar çıkarma.
+   * Extract row and amount using RapidOCR (ONNX) for low-resolution or complex images.
    */
   async #extractWithRapid(imageBuffer, img) {
     const pyBin = await getPythonBin();
@@ -72,7 +72,7 @@ export class ImageExtractor {
         if (matchedCoords.some((y) => Math.abs(y - yCenter) < 15)) continue;
         matchedCoords.push(yCenter);
 
-        // Aynı yatay satırdaki tüm kelimeleri x koordinatına göre sırala
+        // Sort all words in the same horizontal row by x-coordinate
         const rowItems = items
           .filter((other) => {
             const otherY = (other.box[0][1] + other.box[2][1]) / 2;
@@ -82,7 +82,7 @@ export class ImageExtractor {
 
         const lineText = rowItems.map((r) => r.text).join(' | ');
 
-        // Satırdaki son para tutarını bul (tablonun en sağ sütunu)
+        // Find the last monetary amount in the row (typically the rightmost table column)
         const moneyItems = rowItems.filter((r) => /\d+[.,]\d{2}|\b\d{3,}\b/i.test(r.text));
         let amount = moneyItems.length ? moneyItems[moneyItems.length - 1].text : null;
         if (amount && /^\d+$/.test(amount) && amount.length >= 4) {
@@ -91,7 +91,7 @@ export class ImageExtractor {
           amount = `${amount} TL`;
         }
 
-        // Orijinal görselden yalnızca istenen satırı kırp (komşu satırlara taşmayacak şekilde sıkı kırpma)
+        // Crop only the target row tightly without capturing adjacent rows
         const pad = Math.min(1, Math.max(0, this.paddingPx));
         const top = Math.max(0, it.box[0][1] - pad);
         const bottom = Math.min(img.height, it.box[2][1] + pad);
@@ -104,7 +104,7 @@ export class ImageExtractor {
 
         matches.push({
           keyword: match[0].trim(),
-          amount: amount || 'Görselde belirtilen tutar',
+          amount: amount || 'Amount shown in image',
           lineText,
           pageNumber: 1,
           png,
@@ -119,23 +119,23 @@ export class ImageExtractor {
   }
 
   /**
-   * Resim tamponunu (JPEG/PNG/WEBP) OCR ile tarar ve hedef satırları kırpar.
-   * Dönüş: null (eşleşme yok) | match | match[]
+   * Scans image buffer (JPEG/PNG/WEBP) with OCR and crops target rows.
+   * Returns: null (no match) | match | match[]
    */
   async extract(imageBuffer) {
     const img = await loadImage(imageBuffer);
 
-    // 1. Önce derin öğrenme tabanlı RapidOCR'ı dene (düşük kaliteli görsellerde çok etkilidir)
+    // 1. First try deep-learning based RapidOCR (highly effective on noisy mobile photos)
     try {
       const rapidResult = await this.#extractWithRapid(imageBuffer, img);
       if (rapidResult) {
         return rapidResult;
       }
     } catch (err) {
-      // RapidOCR kullanılamazsa Tesseract ile devam et
+      // Fallback to Tesseract.js if RapidOCR fails
     }
 
-    // 2. Yedek OCR Motoru: Tesseract.js
+    // 2. Fallback OCR Engine: Tesseract.js
     const worker = await this.#getWorker();
 
     let ocrInput = imageBuffer;
@@ -210,7 +210,7 @@ export class ImageExtractor {
 
       matches.push({
         keyword,
-        amount: amount || 'Görselde belirtilen tutar',
+        amount: amount || 'Amount shown in image',
         lineText: line.text,
         pageNumber: 1,
         png,

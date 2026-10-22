@@ -1,90 +1,90 @@
 # wp-notifier
 
-WhatsApp gruplarına düşen **görselleri (fotoğraf, ekran görüntüsü, makbuz, dekont)** ve **PDF belgelerini** gerçek zamanlı ve geçmişe dönük olarak izleyen akıllı bildirim botu.
+An intelligent notification bot that monitors a WhatsApp group in real-time and retroactively for **images (receipts, invoices, screenshots)** and **PDF documents**.
 
-Belgede veya görselde belirlediğiniz hedef satırı (örneğin `"18CA DAİRE 07"`, `"18BA DAİRE 11"`, `"Toplam Tutar"`) yerel yapay zeka/OCR (RapidOCR ONNX) ve metin katmanı ayrıştırıcıları ile bulur; tutarı tespit eder, ilgili satırı milimetrik olarak kırpar ve **doğrudan WhatsApp üzerinden görsel ve özet bilgi olarak** size iletir.
+It searches documents and images for target apartment or line patterns (e.g. `"18CA DAİRE 07"`, `"18BA DAİRE 11"`, or `"Total Due"`) using local deep-learning OCR (RapidOCR ONNX) and PDF text-layer extraction, parses monetary amounts, tightly crops the matching line, and **sends cropped images with detailed summaries directly to your WhatsApp chat** (or via Twilio SMS).
 
 ```
-WhatsApp Grubu ──> SessionManager (Geçmiş Senkronizasyonu & Canlı Dinleme)
+WhatsApp Group ──> SessionManager (History Catch-Up & Live Listening)
                          │
                          ▼
-                    processor (Alakasız mesajları anında eler, checkpoint tutar)
+                    processor (Filters noise, maintains checkpoint)
                          │
                          ▼
               ImageExtractor (RapidOCR ONNX) / PdfExtractor
                          │
                          ▼
-              WhatsApp Sohbeti (Kırpılmış görsel & özet) [ÜCRETSİZ]
+              WhatsApp Chat (Cropped image & amount summary) [FREE]
 ```
 
 ---
 
-## Öne Çıkan Özellikler
+## Key Features
 
-- **Ücretsiz & Bağımsız:** Twilio veya AWS S3 gerektirmez; bildirimler doğrudan kendi WhatsApp hesabınıza iletilir.
-- **Yüksek Doğruluklu OCR (RapidOCR ONNX):** Düşük çözünürlüklü, yamuk veya karmaşık mobil ekran görüntülerindeki tabloları bile CPU üzerinde neredeyse sıfır gecikmeyle hatasız okur.
-- **Hassas Tek Satır Kırpma:** Komşu satırları ve gereksiz alanları dahil etmeden yalnızca aranan daireye/satıra odaklanan temiz kırpma yapar.
-- **Geçmişe Dönük Çalışma (Catch-Up):** Bot her açıldığında kaldığı son zaman damgasından (`data/checkpoint.json`) itibaren geriye dönük tarama yapar. Bot kapalıyken paylaşılan fatura ve makbuzlar asla kaçırılmaz.
-- **Tekilleştirme (Deduplication):** MD5 özet tabanlı tekilleştirme (`data/processed.json`) sayesinde aynı dosya grupta tekrar paylaşılsa dahi mükerrer bildirim gönderilmez.
-- **Akıllı Filtreleme:** Düz metin sohbetler, ses kayıtları, çıkartmalar ve hedef anahtar kelimeleri içermeyen tüm mesajlar milisaniyeler içinde elenir.
-- **Çoklu Eşleşme Desteği:** Belgede birden fazla daireniz veya satırınız varsa hepsini ayrı ayrı tespit edip her biri için bağımsız kırpılmış görsel ve tutar özeti gönderir.
+- **100% Free & Self-Contained:** Direct WhatsApp delivery requires no Twilio account or AWS S3 bucket.
+- **High-Accuracy Deep OCR (RapidOCR ONNX):** Powered by lightweight ONNX runtime; accurately reads low-contrast, noisy, or rotated mobile camera shots and tabular receipts locally on CPU with near-zero latency.
+- **Tight Row Cropping:** Milimeter-accurate single-line crop without capturing irrelevant adjacent rows.
+- **History Catch-Up:** Restores state from `data/checkpoint.json` on restart and replays missed messages received while offline.
+- **Deduplication:** MD5 hash store (`data/processed.json`) prevents duplicate alerts if the same document is re-shared.
+- **Fast Noise Filtering:** Non-document messages (stickers, audio notes, plain text chats) are discarded immediately without overhead.
+- **Multi-Match Support:** If a single document contains multiple matching units/rows, separate cropped alerts and amount summaries are dispatched for each.
 
 ---
 
-## Hızlı Başlangıç
+## Quick Start
 
-### macOS Kurulumu
+### macOS Setup
 
 ```bash
-# 1. Gerekli bağımlılıkları ve OCR motorunu kurun:
+# 1. Run the automated setup script:
 npm run setup:macos
 
-# 2. Takip etmek istediğiniz grubun ID'sini öğrenin:
+# 2. List joined groups to find your TARGET_GROUP_ID:
 npm run groups
 
-# 3. .env dosyasını düzenleyin ve botu başlatın:
+# 3. Configure .env and launch the bot:
 npm start
 
-# Bilgisayar her açıldığında arka planda otomatik çalışması için (Launchd):
+# Enable automatic startup on login (Launchd):
 npm run autostart:macos
 ```
 
-### Windows Kurulumu
+### Windows Setup
 
 ```bash
-# 1. Bağımlılıkları yükleyin:
+# 1. Install dependencies:
 npm install
 pip install -r requirements.txt
 
-# 2. Takip etmek istediğiniz grubun ID'sini öğrenin:
+# 2. List joined groups to find your TARGET_GROUP_ID:
 npm run groups
 
-# 3. .env dosyasını düzenleyin ve botu başlatın:
+# 3. Configure .env and launch the bot:
 npm start
 
-# Bilgisayar her açıldığında arka planda sessizce çalışması için:
+# Enable automatic startup on login (Startup folder):
 npm run autostart:windows
 ```
 
 ---
 
-## Yapılandırma (`.env`)
+## Configuration (`.env`)
 
-Proje kök dizininde yer alan `.env` dosyası üzerinden tüm davranışlar özelleştirilebilir:
+Configure bot behavior via environment variables in `.env`:
 
-| Değişken | Varsayılan | Açıklama |
+| Variable | Default | Description |
 | :--- | :--- | :--- |
-| `NOTIFICATION_CHANNEL` | `whatsapp` | `whatsapp` (ücretsiz, doğrudan sohbet) veya `twilio` (SMS + S3 linki). |
-| `ALERT_DESTINATION_NUMBER` | `self` | Bildirimin gideceği telefon numarası (ör. `05336305062` ya da doğrudan kendi sohbetiniz için `self`). |
-| `TARGET_GROUP_ID` | - | İzlenecek WhatsApp grubunun ID'si (`npm run groups` çıktısından kopyalanır). |
-| `GROUP_LABEL` | `WhatsApp grubu` | Bildirim başlığında gösterilecek açıklayıcı grup adı (ör. `GÜNEŞHAN SİTESİ`). |
-| `PDF_TARGET_REGEX` | - | Belgede veya görselde aranacak satır kuralları (Düzenli ifade / Regex). |
-| `HISTORY_LOOKBACK_HOURS`| `168` | Checkpoint bulunmadığında ilk açılışta kaç saat geriye taranacağı (168 = 7 gün). |
-| `ENABLE_DEDUPE` | `true` | Aynı dosyanın mükerrer işlenmesini önleme kilidi. |
-| `DEBUG_SMS_ON_NO_MATCH` | `false` | Hedef satır bulunamadığında da bilgilendirme mesajı gönderilip gönderilmeyeceği. |
-| `RESCAN_ON_STARTUP` | `false` | `true` yapılırsa her açılışta checkpoint sıfırlanıp tüm geçmiş baştan taranır. |
+| `NOTIFICATION_CHANNEL` | `whatsapp` | `whatsapp` (free, direct chat) or `twilio` (SMS + S3 evidence link). |
+| `ALERT_DESTINATION_NUMBER` | `self` | Recipient phone number (e.g. `05336305062` or `'self'` for own chat). |
+| `TARGET_GROUP_ID` | - | Target WhatsApp group ID (obtained via `npm run groups`). |
+| `GROUP_LABEL` | `WhatsApp group` | Human-readable label displayed in notification headers. |
+| `PDF_TARGET_REGEX` | - | Regular expression matching target units or amount lines. |
+| `HISTORY_LOOKBACK_HOURS`| `168` | Fallback lookback window in hours when no checkpoint exists (168 = 7 days). |
+| `ENABLE_DEDUPE` | `true` | Prevents re-processing identical files. |
+| `DEBUG_SMS_ON_NO_MATCH` | `false` | Whether to send debug notification when no target is found in document. |
+| `RESCAN_ON_STARTUP` | `false` | If `true`, ignores checkpoint and re-scans history from startup lookback window. |
 
-### Örnek `.env` İçeriği
+### Example `.env` Configuration
 
 ```env
 NOTIFICATION_CHANNEL=whatsapp
@@ -93,7 +93,7 @@ ALERT_DESTINATION_NUMBER=05336305062
 TARGET_GROUP_ID=905052114164-1499518342@g.us
 GROUP_LABEL=GÜNEŞHAN SİTESİ
 
-# Yalnızca CA 07 ve BA 11 dairelerini eşleştirir (BA07 ve CA11 eşleşmez)
+# Match target apartments (e.g. CA07 and BA11; excludes BA07 and CA11)
 PDF_TARGET_REGEX=(?i)(18\s*-?\s*CA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|CA\s*0?7\b|18\s*-?\s*BA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|BA\s*11\b)
 
 DEBUG_SMS_ON_NO_MATCH=false
@@ -104,42 +104,42 @@ DATA_DIR=./data
 
 ---
 
-## Test Komutları
+## Testing Commands
 
-WhatsApp bağlantısına ihtiyaç duymadan yerel dosyalar üzerinde test yapmak için:
+Test OCR and document parsing on local files without connecting to WhatsApp:
 
 ```bash
-# Görsel / Fotoğraf / Ekran Görüntüsü testi:
-node scripts/test-image.js makbuz.jpg
+# Test image/receipt OCR extraction:
+node scripts/test-image.js receipt.jpg
 
-# PDF belgesi testi:
-node scripts/test-pdf.js fatura.pdf
+# Test PDF extraction and cropping:
+node scripts/test-pdf.js invoice.pdf
 
-# Birim testleri çalıştırma (15 test):
+# Run unit test suite:
 npm test
 ```
 
 ---
 
-## Arka Planda Çalıştırma & Otomasyon
+## Background Service & Automation
 
 ### macOS (LaunchAgent)
-- **Kurulum:** `npm run autostart:macos`
-- **Logları izleme:** `tail -f data/app.log`
-- **Durdurma:** `launchctl unload ~/Library/LaunchAgents/com.wpnotifier.bot.plist`
+- **Install:** `npm run autostart:macos`
+- **View logs:** `tail -f data/app.log`
+- **Uninstall:** `launchctl unload ~/Library/LaunchAgents/com.wpnotifier.bot.plist`
 
 ### Windows (Startup VBS)
-- **Kurulum:** `npm run autostart:windows`
-- **Logları izleme:** `Get-Content -Path data\app.log -Wait`
-- **Durdurma:** `powershell -ExecutionPolicy Bypass -File scripts/stop.ps1`
+- **Install:** `npm run autostart:windows`
+- **View logs:** `Get-Content -Path data\app.log -Wait`
+- **Stop process:** `powershell -ExecutionPolicy Bypass -File scripts/stop.ps1`
 
-### Docker ile Çalıştırma
+### Docker Deployment
 ```bash
 docker compose up -d --build
 docker compose logs -f
 ```
 
-### PM2 ile Çalıştırma
+### PM2 Process Manager
 ```bash
 npm install -g pm2
 pm2 start ecosystem.config.cjs
@@ -148,6 +148,6 @@ pm2 logs wp-notifier
 
 ---
 
-## Lisans
+## License
 
 MIT

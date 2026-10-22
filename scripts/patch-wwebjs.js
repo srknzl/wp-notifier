@@ -1,13 +1,13 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-// 1. Utils.js dosyasını yamala
+// 1. Patch Utils.js
 const utilsFile = join('node_modules', 'whatsapp-web.js', 'src', 'util', 'Injected', 'Utils.js');
 if (existsSync(utilsFile)) {
   let content = readFileSync(utilsFile, 'utf8');
   let changed = false;
 
-  // Medya gönderimi düzeltmesi
+  // Media send fix
   if (!content.includes('delete message.__x_id;')) {
     content = content.replace(
       "        // Bot's won't reply if canonicalUrl is set (linking)",
@@ -16,7 +16,7 @@ if (existsSync(utilsFile)) {
     changed = true;
   }
 
-  // getMessageModel fonksiyonunda msg.id._serialized alanının daima bulunmasını sağla
+  // Ensure msg.id._serialized is always present in getMessageModel
   if (!content.includes('msg.id._serialized = message.id?._serialized')) {
     content = content.replace(
       "window.WWebJS.getMessageModel = (message) => {\n        const msg = message.serialize();",
@@ -27,17 +27,17 @@ if (existsSync(utilsFile)) {
 
   if (changed) {
     writeFileSync(utilsFile, content, 'utf8');
-    console.log('[patch-wwebjs] Utils.js yamalandı.');
+    console.log('[patch-wwebjs] Utils.js patched.');
   }
 }
 
-// 2. Message.js dosyasını yamala
+// 2. Patch Message.js
 const msgFile = join('node_modules', 'whatsapp-web.js', 'src', 'structures', 'Message.js');
 if (existsSync(msgFile)) {
   let content = readFileSync(msgFile, 'utf8');
   let changed = false;
 
-  // downloadMedia mimetype düzeltmesi
+  // Fix downloadMedia mimetype
   if (!content.includes('mimetype: msg.mimetype,')) {
     content = content.replace(
       '                        type: msg.type,\n                        signal: new AbortController().signal,',
@@ -46,7 +46,7 @@ if (existsSync(msgFile)) {
     changed = true;
   }
 
-  // _patch fonksiyonunda this.id._serialized yedeği düzeltmesi
+  // Fix this.id._serialized fallback in _patch
   if (!content.includes('this.id._serialized = this.id.$1')) {
     content = content.replace(
       '        this.id = data.id;\n\n        /**',
@@ -57,6 +57,6 @@ if (existsSync(msgFile)) {
 
   if (changed) {
     writeFileSync(msgFile, content, 'utf8');
-    console.log('[patch-wwebjs] Message.js yamalandı.');
+    console.log('[patch-wwebjs] Message.js patched.');
   }
 }

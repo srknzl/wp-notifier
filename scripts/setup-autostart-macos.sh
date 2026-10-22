@@ -2,14 +2,14 @@
 set -e
 
 # ========================================================
-# wp-notifier - macOS LaunchAgent (Arka Plan Otomatik Başlatma)
+# wp-notifier - macOS LaunchAgent (Background Autostart)
 # ========================================================
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NODE_BIN="$(command -v node)"
 
 if [ -z "$NODE_BIN" ]; then
-    echo "❌ Node.js bulunamadı."
+    echo "❌ Node.js not found."
     exit 1
 fi
 
@@ -19,7 +19,7 @@ PLIST_FILE="$PLIST_DIR/com.wpnotifier.bot.plist"
 mkdir -p "$PLIST_DIR"
 mkdir -p "$REPO_DIR/data"
 
-echo "📝 LaunchAgent oluşturuluyor: $PLIST_FILE"
+echo "📝 Creating LaunchAgent: $PLIST_FILE"
 
 cat <<EOF > "$PLIST_FILE"
 <?xml version="1.0" encoding="UTF-8"?>
@@ -52,10 +52,10 @@ cat <<EOF > "$PLIST_FILE"
 </plist>
 EOF
 
-# Önceki varsa durdur ve yenisini yükle
+# Unload previous instance if present and load new one
 launchctl unload "$PLIST_FILE" 2>/dev/null || true
 launchctl load "$PLIST_FILE"
 
-echo "✅ wp-notifier macOS LaunchAgent başarıyla kuruldu ve arka planda başlatıldı!"
-echo "📄 Logları izlemek için: tail -f data/app.log"
-echo "🛑 Servisi durdurmak için: launchctl unload $PLIST_FILE"
+echo "✅ wp-notifier macOS LaunchAgent installed and started in background!"
+echo "📄 View logs: tail -f data/app.log"
+echo "🛑 Stop service: launchctl unload $PLIST_FILE"

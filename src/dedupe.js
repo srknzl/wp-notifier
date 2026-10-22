@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 export const md5 = (buffer) => createHash('md5').update(buffer).digest('hex');
 
-// İşlenen PDF'lerin MD5'leri; WhatsApp mesajı yeniden yayınlarsa çift SMS gitmesin.
+// MD5 hashes of processed documents/images to prevent duplicate alerts.
 export class DedupeStore {
   constructor(dataDir) {
     mkdirSync(dataDir, { recursive: true });

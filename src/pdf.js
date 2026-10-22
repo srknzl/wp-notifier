@@ -1,10 +1,10 @@
 import { createCanvas } from '@napi-rs/canvas';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-// Sondaki (?!...) tarih gibi dizileri (15.11.2026, 15/11/2026) tutar sanmayı önler.
+// Lookahead prevents misinterpreting date patterns (e.g. 15.11.2026, 15/11/2026) as amounts.
 const AMOUNT_RE =
   /(?:[$€£₺]\s?|(?:TL|TRY|USD|EUR)\s)?-?(?:\d{1,3}(?:[.,\s']\d{3})+(?!\d)|\d+)(?:[.,]\d{1,2})?(?![.,/-]?\d)(?:\s?(?:TL|TRY|USD|EUR|[$€£₺]))?/g;
-// Kuruş hanesi ya da para birimi taşıyan sayı; sayfa no, yüzde, gün sayısı gibi sayılardan ayırır.
+// Identifies numbers with decimals or currency symbols; distinguishes amounts from page numbers or percentages.
 const MONEY_RE = /[.,]\d{2}(?!\d)|[$€£₺]|TL|TRY|USD|EUR/;
 
 function pickAmount(text) {
@@ -14,12 +14,12 @@ function pickAmount(text) {
 
 export class UnreadablePdfError extends Error {
   constructor() {
-    super('PDF metin katmanı okunamadı (taranmış görüntü olabilir)');
+    super('PDF text layer could not be read (scanned image or unsupported encoding)');
     this.name = 'UnreadablePdfError';
   }
 }
 
-// Aynı y koordinatındaki metin parçalarını satırlara topla.
+// Group text fragments on approximately the same y-coordinate into lines.
 function groupLines(items, tolerance = 2) {
   const lines = [];
   for (const item of items) {
@@ -39,11 +39,11 @@ function groupLines(items, tolerance = 2) {
     line.box = {
       x1: Math.min(...line.items.map((i) => i.x)),
       x2: Math.max(...line.items.map((i) => i.x + i.width)),
-      y1: Math.min(...line.items.map((i) => i.y - i.height * 0.25)), // alt çizgi payı
+      y1: Math.min(...line.items.map((i) => i.y - i.height * 0.25)), // underline margin
       y2: Math.max(...line.items.map((i) => i.y + i.height)),
     };
   }
-  // PDF koordinatında y yukarı doğru artar; yukarıdan aşağı sırala.
+  // PDF y coordinates increase upwards; sort top-to-bottom.
   return lines.sort((a, b) => b.y - a.y);
 }
 
@@ -59,9 +59,9 @@ export class PdfExtractor {
   }
 
   /**
-   * PDF'te hedef satırları bulur, sayfayı yüksek çözünürlükte render edip satırı kırpar.
-   * Dönüş: null (eşleşme yok) | match | match[]
-   * Metin katmanı yoksa UnreadablePdfError fırlatır.
+   * Scans PDF for target lines, renders page at high resolution, and crops matching lines.
+   * Returns: null (no match) | match | match[]
+   * Throws UnreadablePdfError if no text layer exists.
    */
   async extract(pdfBuffer) {
     const doc = await getDocument({

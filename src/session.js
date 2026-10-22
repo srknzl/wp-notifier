@@ -10,8 +10,8 @@ const { Client, LocalAuth, MessageMedia } = pkg;
 const READY_TIMEOUT_MS = 120_000;
 
 /**
- * WhatsApp Web oturumunu yönetir.
- * Olaylar: 'ready', 'message' (msg), 'critical' (reason)
+ * Manages WhatsApp Web session lifecycle and event handling.
+ * Events: 'ready', 'message' (msg), 'critical' (reason)
  */
 export class SessionManager extends EventEmitter {
   constructor({ sessionDataPath, chromiumPath, heartbeatMinutes, heartbeatTimeoutMs, reconnectDelaysMs, alertDestination, targetGroupId }) {
@@ -88,15 +88,15 @@ export class SessionManager extends EventEmitter {
   }
 
   /**
-   * Doğrudan hedef WhatsApp sohbetine görsel ve metin bildirimi gönderir.
+   * Sends image and caption alert directly to destination WhatsApp chat.
    */
-  async sendAlert({ text, imageBuffer, fileName = 'fatura.png' }) {
+  async sendAlert({ text, imageBuffer, fileName = 'alert.png' }) {
     if (!this.client || !this.ready) {
-      throw new Error('WhatsApp istemcisi hazır değil');
+      throw new Error('WhatsApp client is not ready');
     }
     const targetChat = this.getDestinationChatId();
     if (!targetChat) {
-      throw new Error('Hedef WhatsApp sohbeti belirlenemedi');
+      throw new Error('Destination WhatsApp chat could not be resolved');
     }
 
     if (imageBuffer) {
@@ -107,19 +107,19 @@ export class SessionManager extends EventEmitter {
   }
 
   /**
-   * Hedef sohbetteki geçmiş mesajları geriye dönük tarar; alakasızları eler,
-   * yalnızca resim ve doküman/PDF içeren adayları sırayla işleyiciye iletir.
+   * Scans historical messages in target chat; filters out non-media items,
+   * and dispatches media candidates sequentially to message handler.
    */
   async syncHistory({ targetChatId, sinceTimestamp = 0, onMessage }) {
     if (!this.client || !this.ready) {
-      throw new Error('WhatsApp istemcisi hazır değil');
+      throw new Error('WhatsApp client is not ready');
     }
     const resolvedChatId = targetChatId === 'self' || targetChatId === 'me'
       ? (this.selfChatId || this.client.info?.wid?._serialized)
       : targetChatId;
 
-    const sinceText = sinceTimestamp > 0 ? new Date(sinceTimestamp * 1000).toLocaleString('tr-TR') : 'tüm geçmiş';
-    logger.info(`Geçmiş mesajlar taranıyor: ${resolvedChatId} (Başlangıç: ${sinceText})`);
+    const sinceText = sinceTimestamp > 0 ? new Date(sinceTimestamp * 1000).toISOString() : 'full history';
+    logger.info(`Scanning historical messages: ${resolvedChatId} (Since: ${sinceText})`);
 
     const msgList = await this.client.pupPage.evaluate(async (chatId, minT) => {
       const chat = await window.WWebJS.getChat(chatId, { getAsModel: false });
@@ -155,11 +155,11 @@ export class SessionManager extends EventEmitter {
     }, resolvedChatId, sinceTimestamp);
 
     if (!msgList || !msgList.length) {
-      logger.info('İncelenecek yeni geçmiş medya mesajı bulunamadı.');
+      logger.info('No new historical media messages found.');
       return;
     }
 
-    logger.info(`Geçmişten işlenecek ${msgList.length} adet medya mesajı bulundu, sırayla inceleniyor...`);
+    logger.info(`Found ${msgList.length} historical media messages, processing sequentially...`);
 
     for (const item of msgList) {
       if (!item.id) continue;
@@ -173,10 +173,10 @@ export class SessionManager extends EventEmitter {
           await onMessage(msg);
         }
       } catch (err) {
-        logger.warn(`Geçmiş mesaj işlenemedi (${item.id}): ${err.message}`);
+        logger.warn(`Could not process historical message (${item.id}): ${err.message}`);
       }
     }
-    logger.info('Geçmiş mesaj taraması tamamlandı.');
+    logger.info('Historical message sync completed.');
   }
 
   #createClient() {
@@ -191,14 +191,14 @@ export class SessionManager extends EventEmitter {
 
     client.on('qr', (qr) => {
       if (this.everAuthenticated) {
-        this.#critical('Oturum sonlandı, yeni QR kodu istendi');
+        this.#critical('Session invalidated, new QR code requested');
       }
-      logger.info('QR kodu WhatsApp > Bağlı cihazlar ekranından okut:');
+      logger.info('Scan QR code via WhatsApp > Linked devices:');
       qrcode.generate(qr, { small: true });
     });
     client.on('authenticated', () => {
       this.everAuthenticated = true;
-      logger.info('WhatsApp: Kimlik doğrulandı (authenticated)');
+      logger.info('WhatsApp: authenticated');
     });
     client.on('ready', async () => {
       this.ready = true;
@@ -210,26 +210,26 @@ export class SessionManager extends EventEmitter {
         }, client.info?.wid?._serialized);
         this.selfChatId = selfChat;
       } catch {}
-      logger.info(`WhatsApp: Hazır (ready) (Bağlı numara: ${client.info?.wid?.user})`);
+      logger.info(`WhatsApp: ready (Connected user: ${client.info?.wid?.user})`);
       this.emit('ready');
     });
     client.on('auth_failure', (msg) => {
       this.ready = false;
-      logger.error(`WhatsApp: Kimlik doğrulama hatası (auth_failure) ${msg}`);
-      this.#critical(`Kimlik doğrulama hatası: ${msg}`);
+      logger.error(`WhatsApp: auth_failure ${msg}`);
+      this.#critical(`auth_failure: ${msg}`);
     });
     client.on('disconnected', (reason) => {
       this.ready = false;
-      logger.warn(`WhatsApp: Bağlantı koptu (disconnected) (${reason})`);
+      logger.warn(`WhatsApp: disconnected (${reason})`);
       if (reason === 'LOGOUT') {
-        this.#critical('Telefondan oturum kapatıldı (LOGOUT)');
+        this.#critical('Logged out from phone (LOGOUT)');
       } else {
-        this.#recover(`Bağlantı koptu: ${reason}`);
+        this.#recover(`disconnected: ${reason}`);
       }
     });
     client.on('message', (msg) => this.emit('message', msg));
     client.on('message_create', (msg) => {
-      // Kendimize veya hedef sohbete gönderilen mesajları da yakala
+      // Capture messages sent to or from self / target
       if (msg.fromMe && (this.isTargetChat(msg.to) || this.isTargetChat(msg.from))) {
         this.emit('message', msg);
       }
@@ -256,7 +256,7 @@ export class SessionManager extends EventEmitter {
     try {
       await withTimeout(old.destroy(), 30_000, 'client.destroy');
     } catch (err) {
-      logger.warn(`Eski istemci kapatılamadı: ${err.message}`);
+      logger.warn(`Could not cleanly destroy client: ${err.message}`);
     }
   }
 
@@ -265,13 +265,13 @@ export class SessionManager extends EventEmitter {
     try {
       const state = await withTimeout(this.client.getState(), this.heartbeatTimeoutMs, 'getState');
       if (state !== 'CONNECTED') {
-        logger.warn(`Heartbeat: durum ${state}`);
-        await this.#recover(`durum=${state}`);
+        logger.warn(`Heartbeat: state ${state}`);
+        await this.#recover(`state=${state}`);
       } else {
-        logger.info('Heartbeat: BAĞLI (CONNECTED)');
+        logger.info('Heartbeat: CONNECTED');
       }
     } catch (err) {
-      logger.warn(`Heartbeat başarısız: ${err.message}`);
+      logger.warn(`Heartbeat failed: ${err.message}`);
       await this.#recover(`heartbeat: ${err.message}`);
     }
   }
@@ -281,22 +281,22 @@ export class SessionManager extends EventEmitter {
     this.recovering = true;
     try {
       for (const [i, delay] of this.reconnectDelaysMs.entries()) {
-        logger.warn(`Yeniden bağlanma ${i + 1}/${this.reconnectDelaysMs.length}, ${delay / 1000} sn sonra (${reason})`);
+        logger.warn(`Reconnecting ${i + 1}/${this.reconnectDelaysMs.length} in ${delay / 1000}s (${reason})`);
         await this.#destroyClient();
         await sleep(delay);
         try {
           await withTimeout(this.#initClient(), READY_TIMEOUT_MS, 'WhatsApp ready');
           const state = await withTimeout(this.client.getState(), this.heartbeatTimeoutMs, 'getState');
           if (state === 'CONNECTED') {
-            logger.info('Yeniden bağlanıldı');
+            logger.info('Reconnected successfully');
             return;
           }
-          logger.warn(`Yeniden bağlanma sonrası durum: ${state}`);
+          logger.warn(`Post-reconnect state: ${state}`);
         } catch (err) {
-          logger.warn(`Yeniden bağlanma denemesi başarısız: ${err.message}`);
+          logger.warn(`Reconnect attempt failed: ${err.message}`);
         }
       }
-      this.#critical(`${reason}; ${this.reconnectDelaysMs.length} yeniden bağlanma denemesi başarısız oldu`);
+      this.#critical(`${reason}; ${this.reconnectDelaysMs.length} reconnect attempts failed`);
     } finally {
       this.recovering = false;
     }

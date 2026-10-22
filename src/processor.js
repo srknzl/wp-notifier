@@ -4,7 +4,7 @@ import { ImageExtractor } from './image.js';
 import { templates } from './sms.js';
 import { md5 } from './dedupe.js';
 
-// Gelen WhatsApp mesajını işler: grup/medya filtresi (Resim & PDF) -> çıkarma -> bildirim.
+// Handles incoming WhatsApp message: filters group/media (images & PDFs) -> extraction -> alerts.
 export function createMessageHandler({ config, session, sms, storage, extractor, pdfExtractor, imageExtractor, dedupe, checkpoint, audit }) {
   const pdfExt = pdfExtractor || extractor;
   const imgExt = imageExtractor || (config?.pdf ? new ImageExtractor(config.pdf) : null);
@@ -17,23 +17,26 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
 
     if (!isTarget) return;
 
-    // Botun kendi gönderdiği bildirimleri sonsuz döngüye girmemesi için atla
+    // Skip self-generated notification messages to prevent infinite loops
     const textContent = msg._data?.caption || msg.body || '';
     if (
+      textContent.startsWith('📋 *[NOTIFICATION]') ||
       textContent.startsWith('📋 *[BİLDİRİM]') ||
       textContent.startsWith('[ALERT]') ||
+      textContent.startsWith('⚠️ *[WARNING]') ||
       textContent.startsWith('⚠️ *[UYARI]') ||
+      textContent.startsWith('ℹ️ *[INFO]') ||
       textContent.startsWith('ℹ️ *[BİLGİ]')
     ) {
       return;
     }
 
-    // Her incelenen mesajda checkpoint güncelle (kaldığı yer kaydı)
+    // Update checkpoint timestamp on each processed message
     if (checkpoint && msg.timestamp) {
       checkpoint.update(target, { timestamp: msg.timestamp, messageId: msg.id?._serialized });
     }
 
-    // Alakasız mesajları (medyasız, düz metin, çıkartma, ses vb.) hemen atla
+    // Ignore non-media messages immediately (plain text, stickers, audio, etc.)
     if (!msg.hasMedia) return;
 
     const mime = msg._data?.mimetype || '';
@@ -48,7 +51,7 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
     try {
       media = await msg.downloadMedia();
     } catch (err) {
-      logger.error(`Medya indirme hatası: ${err.message}`);
+      logger.error(`Media download error: ${err.message}`);
       return;
     }
     if (!media || !media.data) return;
@@ -59,15 +62,15 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
 
     if (!isPdf && !isImage) return;
 
-    const fileName = media.filename || filename || (isImage ? 'gorsel.jpg' : 'belge.pdf');
+    const fileName = media.filename || filename || (isImage ? 'image.jpg' : 'document.pdf');
     let buffer = Buffer.from(media.data, 'base64');
     const hash = md5(buffer);
     if (config?.enableDedupe && dedupe?.has && dedupe.has(hash)) {
-      logger.info(`Zaten işlendi, atlanıyor: ${fileName} (${hash})`);
+      logger.info(`Already processed, skipping: ${fileName} (${hash})`);
       return;
     }
-    const mediaTypeLabel = isImage ? 'Görsel/Resim' : 'PDF';
-    logger.info(`${mediaTypeLabel} alındı: ${fileName} (${buffer.length} bayt, ${hash})`);
+    const mediaTypeLabel = isImage ? 'Image' : 'PDF';
+    logger.info(`${mediaTypeLabel} received: ${fileName} (${buffer.length} bytes, ${hash})`);
 
     try {
       let result;
@@ -82,7 +85,7 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
         audit.record('unreadable_media', { fileName, hash });
         if (session?.sendAlert && config.channel !== 'twilio') {
           await session.sendAlert({
-            text: `⚠️ *[UYARI]* ${config.groupLabel} sohbetine gelen "${fileName}" dosyasının metin katmanı okunamadı.`,
+            text: `⚠️ *[WARNING]* Text layer in "${fileName}" from ${config.groupLabel} could not be read.`,
           });
         } else if (sms) {
           await sms.send(templates.unreadablePdf({ group: config.groupLabel }));
@@ -93,11 +96,11 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
 
       if (!result) {
         audit.record('no_match', { fileName, hash });
-        logger.info(`Hedef bulunamadı: ${fileName}`);
+        logger.info(`Target not found in: ${fileName}`);
         if (config.debugSmsOnNoMatch) {
           if (session?.sendAlert && config.channel !== 'twilio') {
             await session.sendAlert({
-              text: `ℹ️ *[BİLGİ]* ${config.groupLabel} sohbetindeki "${fileName}" dosyasında aranan daire/hedef metin bulunamadı.`,
+              text: `ℹ️ *[INFO]* Target text not found in "${fileName}" from ${config.groupLabel}.`,
             });
           } else if (sms) {
             await sms.send(templates.noMatchDebug({ group: config.groupLabel, file: fileName }));
@@ -111,16 +114,16 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
 
       for (let i = 0; i < matches.length; i++) {
         const item = matches[i];
-        // 1. WhatsApp Kanalı (Varsayılan ve ücretsiz: görseli ve özeti doğrudan WhatsApp'a atar)
+        // 1. WhatsApp Channel (Default & Free: sends cropped image and summary directly to WhatsApp)
         if (session?.sendAlert && config.channel !== 'twilio') {
           const caption = [
-            `📋 *[BİLDİRİM] Daire Aidat/Fatura Tutarı Bulundu*`,
-            `📍 Kaynak: ${config.groupLabel}`,
-            `📄 Dosya: ${fileName}`,
-            `🏠 Eşleşen Daire: *${item.keyword}*`,
-            `💰 Tutar: *${item.amount}*`,
-            item.pageNumber && !isImage ? `📑 Sayfa: ${item.pageNumber}` : null,
-            `📝 Satır: _"${item.lineText}"_`,
+            `📋 *[NOTIFICATION] Target Amount Found*`,
+            `📍 Source: ${config.groupLabel}`,
+            `📄 File: ${fileName}`,
+            `🏠 Target: *${item.keyword}*`,
+            `💰 Amount: *${item.amount}*`,
+            item.pageNumber && !isImage ? `📑 Page: ${item.pageNumber}` : null,
+            `📝 Line: _"${item.lineText}"_`,
           ]
             .filter(Boolean)
             .join('\n');
@@ -128,12 +131,12 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
           await session.sendAlert({
             text: caption,
             imageBuffer: item.png,
-            fileName: `kirpilmis_${hash.slice(0, 8)}_${i + 1}.png`,
+            fileName: `cropped_${hash.slice(0, 8)}_${i + 1}.png`,
           });
           item.png = null;
           audit.record('alert_sent', { fileName, hash, page: item.pageNumber, line: item.lineText, amount: item.amount, channel: 'whatsapp' });
         } else if (storage && sms) {
-          // 2. Twilio SMS + S3 Kanalı (İsteğe bağlı yöntem)
+          // 2. Optional Twilio SMS + AWS S3 Channel
           const { url, key } = await storage.uploadPng(item.png);
           item.png = null;
           const body = templates.targetFound({ keyword: item.keyword, amount: item.amount, url });

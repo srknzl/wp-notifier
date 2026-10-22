@@ -1,4 +1,4 @@
-// TARGET_GROUP_ID'yi bulmak için: QR okut, hesabın üye olduğu grupları listeler.
+// Scan QR code to list groups associated with this WhatsApp account to find TARGET_GROUP_ID.
 import 'dotenv/config';
 import qrcode from 'qrcode-terminal';
 import pkg from 'whatsapp-web.js';
@@ -23,7 +23,7 @@ client.on('ready', async () => {
           .filter((c) => c.isGroup || (c.id && c.id._serialized && c.id._serialized.endsWith('@g.us')))
           .map((c) => ({
             id: c.id?._serialized,
-            name: c.name || c.formattedTitle || c.contact?.name || 'İsimsiz Grup',
+            name: c.name || c.formattedTitle || c.contact?.name || 'Unnamed Group',
           }))
           .filter((g) => g.id);
       } catch {
@@ -42,7 +42,7 @@ client.on('ready', async () => {
       }
     }
   } catch (err) {
-    console.error('Grup listesi alınırken hata oluştu:', err.message || err);
+    console.error('Error fetching group list:', err.message || err);
   } finally {
     await client.destroy();
     process.exit(0);

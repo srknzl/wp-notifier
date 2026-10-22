@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-// Botun her hedef sohbette kaldığı son mesaj zaman damgasını (checkpoint) saklar.
+// Persists the last processed message timestamp (checkpoint) per target chat.
 export class CheckpointStore {
   constructor(dataDir) {
     mkdirSync(dataDir, { recursive: true });
@@ -28,4 +28,3 @@ export class CheckpointStore {
     }
   }
 }
-

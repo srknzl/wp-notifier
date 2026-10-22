@@ -1,6 +1,6 @@
 """
-RapidOCR (ONNX) kullanarak görseldeki tüm metin bloklarını ve koordinatlarını JSON olarak döndürür.
-Kullanım: python scripts/ocr.py <resim_dosyasi>
+Extract all text blocks and coordinates from an image as JSON using RapidOCR (ONNX).
+Usage: python scripts/ocr.py <image_path>
 """
 import sys
 import json
@@ -28,4 +28,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

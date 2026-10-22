@@ -5,9 +5,8 @@ $processes = Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" -ErrorAct
 if ($processes) {
     foreach ($p in $processes) {
         Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue
-        Write-Host "wp-notifier durduruldu (PID: $($p.ProcessId))" -ForegroundColor Yellow
+        Write-Host "wp-notifier stopped (PID: $($p.ProcessId))" -ForegroundColor Yellow
     }
 } else {
-    Write-Host "Çalışan wp-notifier işlemi bulunamadı."
+    Write-Host "No running wp-notifier processes found."
 }
-

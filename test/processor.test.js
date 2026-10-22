@@ -18,7 +18,7 @@ function setup() {
   const sent = [];
   const uploads = [];
   const handler = createMessageHandler({
-    config: { channel: 'twilio', enableDedupe: true, whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
+    config: { channel: 'twilio', enableDedupe: true, whatsapp: { targetGroupId: GROUP }, groupLabel: 'Accounting', debugSmsOnNoMatch: false },
     sms: { send: async (body) => sent.push(body) },
     storage: {
       uploadPng: async (png) => {
@@ -42,7 +42,7 @@ function setupWhatsApp() {
     },
   };
   const handler = createMessageHandler({
-    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
+    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Accounting', debugSmsOnNoMatch: false },
     session,
     extractor: new PdfExtractor({ targetRegex: /(total\s*due|amount\s*payable)/i }),
     dedupe: new DedupeStore(dataDir),
@@ -59,7 +59,7 @@ const pdfMessage = (file, from = GROUP) => ({
   downloadMedia: async () => ({ mimetype: 'application/pdf', filename: file, data: fixture(file) }),
 });
 
-test('eşleşen PDF: görsel yüklenir ve tek SMS gider; tekrar gelirse atlanır', async () => {
+test('matching PDF: uploads image and sends single alert; duplicate is skipped', async () => {
   const { handler, sent, uploads } = setup();
   await handler(pdfMessage('invoice.pdf'));
   await handler(pdfMessage('invoice.pdf'));
@@ -69,26 +69,26 @@ test('eşleşen PDF: görsel yüklenir ve tek SMS gider; tekrar gelirse atlanır
   assert.equal(uploads[0].subarray(1, 4).toString(), 'PNG');
 });
 
-test('başka gruptan gelen mesaj yok sayılır', async () => {
+test('messages from non-target chats are ignored', async () => {
   const { handler, sent } = setup();
   await handler(pdfMessage('invoice.pdf', '905551112233@c.us'));
   assert.equal(sent.length, 0);
 });
 
-test('metin katmanı olmayan PDF uyarı SMSi üretir', async () => {
+test('PDF without text layer triggers warning alert', async () => {
   const { handler, sent, uploads } = setup();
   await handler(pdfMessage('scanned.pdf'));
   assert.equal(uploads.length, 0);
-  assert.deepEqual(sent, ['[WARNING] PDF received in Muhasebe but text layer was unreadable.']);
+  assert.deepEqual(sent, ['[WARNING] PDF received in Accounting but text layer was unreadable.']);
 });
 
-test('eşleşme yoksa SMS gitmez', async () => {
+test('no alert sent when no target matches in PDF', async () => {
   const { handler, sent } = setup();
   await handler(pdfMessage('nomatch.pdf'));
   assert.equal(sent.length, 0);
 });
 
-test('WhatsApp kanalı: doğrudan WhatsApp görsel ve metin bildirimi atılır', async () => {
+test('WhatsApp channel: sends direct image and text alert to WhatsApp', async () => {
   const { handler, alerts } = setupWhatsApp();
   await handler(pdfMessage('invoice.pdf'));
   assert.equal(alerts.length, 1);
@@ -97,23 +97,23 @@ test('WhatsApp kanalı: doğrudan WhatsApp görsel ve metin bildirimi atılır',
   assert.equal(alerts[0].imageBuffer.subarray(1, 4).toString(), 'PNG');
 });
 
-test('Resim mesajı: OCR ile hedef satır bulunur, kırpılır ve bildirim gönderilir', async () => {
+test('Image message: finds target row via OCR, crops, and sends alert', async () => {
   const dataDir = mkdtempSync(join(tmpdir(), 'wpn-img-'));
   const alerts = [];
   const session = { sendAlert: async (data) => alerts.push(data) };
 
   const fakeImageExtractor = {
     extract: async () => ({
-      keyword: 'Toplam Tutar',
-      amount: '1.250,00 TL',
-      lineText: 'Toplam Tutar: 1.250,00 TL',
+      keyword: 'Total Due',
+      amount: '1,250.00 TL',
+      lineText: 'Total Due: 1,250.00 TL',
       pageNumber: 1,
       png: Buffer.from('PNG_MOCK'),
     }),
   };
 
   const handler = createMessageHandler({
-    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
+    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Accounting', debugSmsOnNoMatch: false },
     session,
     imageExtractor: fakeImageExtractor,
     dedupe: new DedupeStore(dataDir),
@@ -124,15 +124,15 @@ test('Resim mesajı: OCR ile hedef satır bulunur, kırpılır ve bildirim gönd
     from: GROUP,
     hasMedia: true,
     type: 'image',
-    _data: { mimetype: 'image/jpeg', filename: 'makbuz.jpg' },
-    downloadMedia: async () => ({ mimetype: 'image/jpeg', filename: 'makbuz.jpg', data: Buffer.from('image_bytes').toString('base64') }),
+    _data: { mimetype: 'image/jpeg', filename: 'receipt.jpg' },
+    downloadMedia: async () => ({ mimetype: 'image/jpeg', filename: 'receipt.jpg', data: Buffer.from('image_bytes').toString('base64') }),
   };
 
   await handler(imageMsg);
   await handler(imageMsg);
-  // Dedupe kapalı olduğu için aynı mesaj tekrar gönderildiğinde de incelenir
+  // Without dedupe, each received message produces an alert
   assert.equal(alerts.length, 2);
-  assert.match(alerts[0].text, /1\.250,00 TL/);
-  assert.match(alerts[0].text, /Toplam Tutar/);
+  assert.match(alerts[0].text, /1,250\.00 TL/);
+  assert.match(alerts[0].text, /Total Due/);
   assert.equal(alerts[0].imageBuffer.toString(), 'PNG_MOCK');
 });

@@ -11,7 +11,7 @@ export function evidenceKey(date = new Date()) {
 
 export class StorageService {
   constructor({ bucket, region, urlMode, acl, publicBaseUrl, presignExpirySeconds }) {
-    this.s3 = new S3Client({ region, maxAttempts: 1 }); // tekrarları withRetry yönetiyor
+    this.s3 = new S3Client({ region, maxAttempts: 1 }); // Retries handled by withRetry
     this.bucket = bucket;
     this.region = region;
     this.urlMode = urlMode;
@@ -22,7 +22,7 @@ export class StorageService {
 
   async uploadPng(buffer) {
     const key = evidenceKey();
-    await withRetry('S3 yükleme', () =>
+    await withRetry('S3 upload', () =>
       this.s3.send(
         new PutObjectCommand({
           Bucket: this.bucket,
@@ -33,7 +33,7 @@ export class StorageService {
         }),
       ),
     );
-    logger.info(`Kanıt yüklendi s3://${this.bucket}/${key}`);
+    logger.info(`Evidence uploaded s3://${this.bucket}/${key}`);
     return { key, url: await this.urlFor(key) };
   }
 

@@ -1,7 +1,7 @@
 {
   "name": "wp-notifier",
   "version": "1.0.0",
-  "description": "WhatsApp grubuna düşen fatura ve aidat görsel/PDF'lerinden tutar çıkarıp bildiren bot",
+  "description": "WhatsApp bot that monitors group images/PDFs, extracts target amounts, and sends cropped alerts",
   "type": "module",
   "main": "src/index.js",
   "engines": {

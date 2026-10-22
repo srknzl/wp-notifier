@@ -1,4 +1,4 @@
-// PM2 Süreç Yöneticisi Yapılandırması
+// PM2 Process Manager Configuration
 module.exports = {
   apps: [
     {
@@ -7,7 +7,7 @@ module.exports = {
       autorestart: true,
       restart_delay: 10000,
       exp_backoff_restart_delay: 5000,
-      max_memory_restart: '700M', // Chromium bellek sızıntısına karşı otomatik yeniden başlatma sınırı
+      max_memory_restart: '700M', // Automatically restart on Chromium memory leak
       time: true,
     },
   ],

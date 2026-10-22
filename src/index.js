@@ -39,7 +39,7 @@ const handleMessage = createMessageHandler({
   audit,
 });
 
-// Oturum açıldığında geçmiş mesajları kaldığı yerden geriye dönük tara
+// Sync history starting from checkpoint timestamp on session ready
 session.on('ready', async () => {
   const targetId = config.whatsapp.targetGroupId;
   let since = config.rescanOnStartup ? null : checkpoint.getLastTimestamp(targetId);
@@ -52,29 +52,29 @@ session.on('ready', async () => {
     sinceTimestamp: since,
     onMessage: (msg) =>
       handleMessage(msg).catch((err) => {
-        logger.error(`Geçmiş mesaj işlenemedi: ${err.message}`);
+        logger.error(`Failed to process history message: ${err.message}`);
       }),
   }).catch((err) => {
-    logger.warn(`Geçmiş mesaj senkronizasyonunda uyarı: ${err.message}`);
+    logger.warn(`Warning during history synchronization: ${err.message}`);
   });
 });
 
 session.on('message', (msg) => {
   handleMessage(msg).catch((err) => {
-    logger.error(`Mesaj işlenemedi: ${err.stack || err.message}`);
+    logger.error(`Message processing failed: ${err.stack || err.message}`);
     audit.record('processing_error', { error: err.message });
   });
 });
 
 session.on('critical', (reason) => {
-  logger.error(`KRİTİK: ${reason}`);
+  logger.error(`CRITICAL: ${reason}`);
   audit.record('session_failure', { reason });
   if (sms) {
     sms.send(templates.sessionFailure({ reason })).catch(() => {});
   }
 });
 
-// Kalıcı bir hata yeniden başlatma döngüsüne girerse her çöküşte uyarı gitmesin.
+// Avoid alert storms during crash/reboot loops
 const CRASH_ALERT_COOLDOWN_MS = 60 * 60_000;
 const crashStamp = join(config.dataDir, 'last-crash-alert');
 
@@ -86,24 +86,23 @@ function crashAlertSentRecently() {
   }
 }
 
-// Damga yalnızca SMS/uyarı gerçekten gidince yazılır; gitmediyse sonraki açılış yeniden dener.
 function markCrashAlertSent() {
   try {
     writeFileSync(crashStamp, new Date().toISOString());
   } catch (err) {
-    logger.warn(`Çöküş damgası yazılamadı: ${err.message}`);
+    logger.warn(`Could not write crash timestamp: ${err.message}`);
   }
 }
 
-// Beklenmeyen çökme: SMS at ve çık (varsa), PM2/Docker yeniden başlatsın.
+// Unexpected crash: send alert and exit
 let dying = false;
 async function fatal(err) {
-  logger.error(`Ölümcül hata: ${err?.stack || err}`);
+  logger.error(`Fatal process error: ${err?.stack || err}`);
   if (dying) return;
   dying = true;
   try {
     if (crashAlertSentRecently()) {
-      logger.warn('Çöküş uyarısı son bir saat içinde gönderildi, tekrar gönderilmiyor');
+      logger.warn('Crash alert sent recently; skipping duplicate alert');
       return;
     }
     if (sms) {
@@ -111,7 +110,7 @@ async function fatal(err) {
       await Promise.race([sent, new Promise((r) => setTimeout(r, 15_000))]);
     }
   } catch {
-    // gönderim hatası loglandı
+    // Alert dispatch error logged
   } finally {
     process.exit(1);
   }
@@ -121,12 +120,12 @@ process.on('unhandledRejection', fatal);
 
 for (const signal of ['SIGINT', 'SIGTERM']) {
   process.on(signal, async () => {
-    logger.info(`${signal} alındı, kapanıyor`);
+    logger.info(`${signal} received, shutting down gracefully`);
     await imageExtractor.close().catch(() => {});
     await session.stop().catch(() => {});
     process.exit(0);
   });
 }
 
-logger.info(`wp-notifier başlıyor; hedef grup ${config.whatsapp.targetGroupId} (Bildirim kanalı: ${config.channel})`);
+logger.info(`wp-notifier starting; target group ${config.whatsapp.targetGroupId} (Notification channel: ${config.channel})`);
 session.start().catch(fatal);

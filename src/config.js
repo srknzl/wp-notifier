@@ -3,7 +3,7 @@ import 'dotenv/config';
 function required(name) {
   const value = process.env[name];
   if (!value || !value.trim()) {
-    throw new Error(`Eksik ortam değişkeni: ${name} (.env dosyasını kontrol et)`);
+    throw new Error(`Missing required environment variable: ${name} (check .env file)`);
   }
   return value.trim();
 }
@@ -16,11 +16,11 @@ function optional(name, fallback) {
 function int(name, fallback) {
   const raw = optional(name, String(fallback));
   const n = Number.parseInt(raw, 10);
-  if (Number.isNaN(n)) throw new Error(`${name} sayı olmalı, gelen: ${raw}`);
+  if (Number.isNaN(n)) throw new Error(`${name} must be an integer, received: ${raw}`);
   return n;
 }
 
-// PDF_TARGET_REGEX "(?i)..." inline bayrağıyla gelebilir (Python tarzı); JS bunu desteklemez.
+// PDF_TARGET_REGEX may arrive with Python-style inline flag "(?i)..."; JS RegExp does not support it natively.
 function parseRegex(raw) {
   let source = raw;
   let flags = '';
@@ -35,12 +35,12 @@ function parseRegex(raw) {
 export function loadConfig() {
   const channel = optional('NOTIFICATION_CHANNEL', 'whatsapp').toLowerCase();
   if (!['whatsapp', 'twilio'].includes(channel)) {
-    throw new Error('NOTIFICATION_CHANNEL "whatsapp" veya "twilio" olmalı');
+    throw new Error('NOTIFICATION_CHANNEL must be "whatsapp" or "twilio"');
   }
 
   const urlMode = optional('EVIDENCE_URL_MODE', 'public');
   if (!['public', 'presigned'].includes(urlMode)) {
-    throw new Error('EVIDENCE_URL_MODE "public" veya "presigned" olmalı');
+    throw new Error('EVIDENCE_URL_MODE must be "public" or "presigned"');
   }
 
   const twilio = channel === 'twilio' ? {
@@ -90,7 +90,7 @@ export function loadConfig() {
       renderScale: Number(optional('PDF_RENDER_SCALE', '3')),
       paddingPx: int('PDF_CROP_PADDING_PX', 20),
     },
-    groupLabel: optional('GROUP_LABEL', 'WhatsApp grubu'),
+    groupLabel: optional('GROUP_LABEL', 'WhatsApp group'),
     dataDir: optional('DATA_DIR', './data'),
     debugSmsOnNoMatch: optional('DEBUG_SMS_ON_NO_MATCH', 'false') === 'true',
     enableDedupe: optional('ENABLE_DEDUPE', 'true') === 'true',

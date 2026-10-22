@@ -4,11 +4,11 @@ import { withRetry } from './retry.js';
 
 const SMS_LIMIT = 160;
 
-// Türkçe karakterler GSM-7 dışında kalır ve SMS'i UCS-2'ye (70 karakter sınırı) düşürür.
-// 160 karakterlik tek segmenti korumak için ASCII'ye çeviriyoruz.
+// Non-ASCII characters fall outside GSM-7 and force SMS into UCS-2 encoding (70-char limit).
+// Transliterate to preserve the single 160-character segment limit.
 const TRANSLIT = { ç: 'c', Ç: 'C', ğ: 'g', Ğ: 'G', ı: 'i', İ: 'I', ö: 'o', Ö: 'O', ş: 's', Ş: 'S', ü: 'u', Ü: 'U', '₺': 'TL', '€': 'EUR' };
 
-// GSM-7'de [ ] { } \ ^ ~ | kaçış karakteriyle gider ve iki karakter yer tutar; ` hiç yoktur.
+// In GSM-7, characters [ ] { } \ ^ ~ | use escape prefix and count as 2 chars; backtick is not supported.
 const GSM_EXTENDED = /[\^{}\\[\]~|]/g;
 
 export function gsmLength(text) {
@@ -38,8 +38,7 @@ function shorten(value, max) {
 }
 
 export const templates = {
-  // URL kısaltılmaz (kırık link olur). Bütçe aşılırsa sırayla: anahtar kelime kısaltılır,
-  // kısa şablona geçilir, tutar kısaltılır.
+  // URLs are never truncated. When over budget: truncate keyword, fallback to compact template, truncate amount.
   targetFound({ keyword, amount, url }) {
     const full = (k, a) => toGsmSafe(`[ALERT] PDF Data Extracted: ${k} - Amount: ${a}. Evidence: ${url}`);
     const compact = (k, a) => toGsmSafe(`[ALERT] ${k}: ${a} ${url}`);
@@ -62,8 +61,7 @@ export const templates = {
       msg = compact(k, a);
     }
     if (over(msg) > 0) {
-      // URL tek başına bütçeyi aşıyor; link bütün gider (2 segment).
-      logger.warn(`SMS ${gsmLength(msg)} karakter; URL çok uzun. EVIDENCE_PUBLIC_BASE_URL ile kısalt.`);
+      logger.warn(`SMS length is ${gsmLength(msg)} characters; URL is too long. Shorten using EVIDENCE_PUBLIC_BASE_URL.`);
     }
     return msg;
   },
@@ -89,7 +87,7 @@ export class SmsNotifier {
     this.queue = Promise.resolve();
   }
 
-  // Mesajlar sırayla gönderilir; biri başarısız olsa bile kuyruk durmaz.
+  // Messages are queued sequentially; failures do not block the queue.
   send(body) {
     const job = this.queue.then(() => this.#dispatch(body));
     this.queue = job.catch(() => {});
@@ -102,15 +100,14 @@ export class SmsNotifier {
         try {
           return await this.client.messages.create({ from: this.from, to: this.to, body });
         } catch (err) {
-          // 4xx (geçersiz numara vb.) tekrar denemekle düzelmez; 429 hariç.
           if (err.status && err.status >= 400 && err.status < 500 && err.status !== 429) err.retryable = false;
           throw err;
         }
       });
-      logger.info(`SMS gönderildi sid=${msg.sid} status=${msg.status} (${gsmLength(body)} karakter)`);
+      logger.info(`SMS dispatched sid=${msg.sid} status=${msg.status} (${gsmLength(body)} characters)`);
       return msg;
     } catch (err) {
-      logger.error(`SMS gönderilemedi: ${err.message}`, { body });
+      logger.error(`SMS send failed: ${err.message}`, { body });
       throw err;
     }
   }
