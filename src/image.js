@@ -2,6 +2,13 @@ import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { createWorker } from 'tesseract.js';
 import { extractAmount } from './pdf.js';
 import { logger } from './logger.js';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { writeFile, unlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+const execFileAsync = promisify(execFile);
 
 export class ImageExtractor {
   constructor({ targetRegex, paddingPx = 8 } = {}) {
@@ -24,14 +31,93 @@ export class ImageExtractor {
   }
 
   /**
+   * Düşük çözünürlüklü ve zorlu görseller için RapidOCR (ONNX) ile satır ve tutar çıkarma.
+   */
+  async #extractWithRapid(imageBuffer, img) {
+    const tmpFile = join(tmpdir(), `ocr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`);
+    try {
+      await writeFile(tmpFile, imageBuffer);
+      const { stdout } = await execFileAsync('python', ['scripts/ocr.py', tmpFile], { timeout: 30000 });
+      const items = JSON.parse(stdout || '[]');
+      if (!items || !items.length) return null;
+
+      const matches = [];
+      const matchedCoords = [];
+
+      for (const it of items) {
+        if (!this.targetRegex) continue;
+        const match = it.text.match(this.targetRegex);
+        if (!match) continue;
+
+        const yCenter = (it.box[0][1] + it.box[2][1]) / 2;
+        if (matchedCoords.some((y) => Math.abs(y - yCenter) < 15)) continue;
+        matchedCoords.push(yCenter);
+
+        // Aynı yatay satırdaki tüm kelimeleri x koordinatına göre sırala
+        const rowItems = items
+          .filter((other) => {
+            const otherY = (other.box[0][1] + other.box[2][1]) / 2;
+            return Math.abs(otherY - yCenter) < 14;
+          })
+          .sort((a, b) => a.box[0][0] - b.box[0][0]);
+
+        const lineText = rowItems.map((r) => r.text).join(' | ');
+
+        // Satırdaki son para tutarını bul (tablonun en sağ sütunu)
+        const moneyItems = rowItems.filter((r) => /\d+[.,]\d{2}|\b\d{3,}\b/i.test(r.text));
+        let amount = moneyItems.length ? moneyItems[moneyItems.length - 1].text : null;
+        if (amount && /^\d+$/.test(amount) && amount.length >= 4) {
+          amount = `${amount.slice(0, -2)},${amount.slice(-2)} TL`;
+        } else if (amount && !/TL|TRY|[$€£₺]/i.test(amount)) {
+          amount = `${amount} TL`;
+        }
+
+        // Orijinal görselden tam satır genişliğinde kırp
+        const top = Math.max(0, it.box[0][1] - this.paddingPx);
+        const bottom = Math.min(img.height, it.box[2][1] + this.paddingPx);
+        const height = Math.max(1, bottom - top);
+
+        const canvas = createCanvas(img.width, height);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, top, img.width, height, 0, 0, img.width, height);
+        const png = canvas.toBuffer('image/png');
+
+        matches.push({
+          keyword: match[0].trim(),
+          amount: amount || 'Görselde belirtilen tutar',
+          lineText,
+          pageNumber: 1,
+          png,
+        });
+      }
+
+      if (!matches.length) return null;
+      return matches.length === 1 ? matches[0] : matches;
+    } finally {
+      unlink(tmpFile).catch(() => {});
+    }
+  }
+
+  /**
    * Resim tamponunu (JPEG/PNG/WEBP) OCR ile tarar ve hedef satırları kırpar.
    * Dönüş: null (eşleşme yok) | match | match[]
    */
   async extract(imageBuffer) {
-    const worker = await this.#getWorker();
     const img = await loadImage(imageBuffer);
 
-    // Çözünürlüğü ve font yüksekliğini artırmak için gerektiğinde görseli büyüt
+    // 1. Önce derin öğrenme tabanlı RapidOCR'ı dene (düşük kaliteli görsellerde çok etkilidir)
+    try {
+      const rapidResult = await this.#extractWithRapid(imageBuffer, img);
+      if (rapidResult) {
+        return rapidResult;
+      }
+    } catch (err) {
+      // RapidOCR kullanılamazsa Tesseract ile devam et
+    }
+
+    // 2. Yedek OCR Motoru: Tesseract.js
+    const worker = await this.#getWorker();
+
     let ocrInput = imageBuffer;
     let scale = 1;
     if (img.width < 1800) {
@@ -40,8 +126,6 @@ export class ImageExtractor {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      // Tablolardaki açık renkli (şeftali/krem/gri) satır arka planlarını beyazlat
-      // böylece ardışık renkli satırlar OCR tarafından yutulmaz
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = imgData.data;
       for (let i = 0; i < d.length; i += 4) {
@@ -87,15 +171,12 @@ export class ImageExtractor {
 
       const keyword = match[0].trim();
 
-      // Aynı satırın birden fazla parçalanmış bloğu tarafından tekrar eklenmesini önle
       const yCenter = (line.bbox.y0 + line.bbox.y1) / 2;
       if (matchedCoords.some((y) => Math.abs(y - yCenter) < 15)) continue;
       matchedCoords.push(yCenter);
 
-      // Orijinal görselden tam satır genişliğinde kırp
       const png = this.#cropRow(img, line.bbox);
 
-      // Tutar çıkarma: önce satır metninden, bulunamazsa bir alt satırdan veya kırpılmış görselden
       let amount = extractAmount(line.text);
       if (!amount && i + 1 < lines.length) {
         amount = extractAmount(lines[i + 1].text);
