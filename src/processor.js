@@ -44,7 +44,13 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
 
     if (!isPdfType && !isImageType) return;
 
-    const media = await msg.downloadMedia();
+    let media;
+    try {
+      media = await msg.downloadMedia();
+    } catch (err) {
+      logger.error(`Medya indirme hatası: ${err.message}`);
+      return;
+    }
     if (!media || !media.data) return;
 
     const mediaMime = media.mimetype || mime || '';

@@ -148,7 +148,10 @@ export class SessionManager extends EventEmitter {
         })
         .sort((a, b) => (a.t > b.t ? 1 : -1));
 
-      return candidates.map((m) => ({ id: m.id?._serialized, t: m.t }));
+      return candidates.map((m) => {
+        const sid = m.id?._serialized || (typeof m.id?.toString === 'function' ? m.id.toString() : m.id?.$1);
+        return { id: sid, t: m.t };
+      });
     }, resolvedChatId, sinceTimestamp);
 
     if (!msgList || !msgList.length) {
@@ -163,6 +166,10 @@ export class SessionManager extends EventEmitter {
       try {
         const msg = await this.client.getMessageById(item.id);
         if (msg) {
+          if (!msg.id?._serialized) {
+            msg.id = msg.id || {};
+            msg.id._serialized = item.id;
+          }
           await onMessage(msg);
         }
       } catch (err) {
