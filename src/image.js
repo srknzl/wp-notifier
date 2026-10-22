@@ -11,7 +11,7 @@ import { join } from 'node:path';
 const execFileAsync = promisify(execFile);
 
 export class ImageExtractor {
-  constructor({ targetRegex, paddingPx = 8 } = {}) {
+  constructor({ targetRegex, paddingPx = 1 } = {}) {
     this.targetRegex = targetRegex;
     this.paddingPx = paddingPx;
     this.worker = null;
@@ -72,9 +72,10 @@ export class ImageExtractor {
           amount = `${amount} TL`;
         }
 
-        // Orijinal görselden tam satır genişliğinde kırp
-        const top = Math.max(0, it.box[0][1] - this.paddingPx);
-        const bottom = Math.min(img.height, it.box[2][1] + this.paddingPx);
+        // Orijinal görselden yalnızca istenen satırı kırp (komşu satırlara taşmayacak şekilde sıkı kırpma)
+        const pad = Math.min(1, Math.max(0, this.paddingPx));
+        const top = Math.max(0, it.box[0][1] - pad);
+        const bottom = Math.min(img.height, it.box[2][1] + pad);
         const height = Math.max(1, bottom - top);
 
         const canvas = createCanvas(img.width, height);
@@ -205,7 +206,7 @@ export class ImageExtractor {
   }
 
   #cropRow(img, bbox) {
-    const pad = this.paddingPx;
+    const pad = Math.min(1, Math.max(0, this.paddingPx));
     const top = Math.max(0, Math.floor(bbox.y0) - pad);
     const bottom = Math.min(img.height, Math.ceil(bbox.y1) + pad);
     const height = Math.max(1, bottom - top);

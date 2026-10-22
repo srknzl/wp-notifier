@@ -109,7 +109,7 @@ export class PdfExtractor {
     await page.render({ canvas, canvasContext: ctx, viewport }).promise;
 
     const [ax, ay, bx, by] = viewport.convertToViewportRectangle([box.x1, box.y1, box.x2, box.y2]);
-    const pad = this.paddingPx;
+    const pad = Math.min(2, Math.max(0, this.paddingPx));
     const left = Math.max(0, Math.floor(Math.min(ax, bx)) - pad);
     const top = Math.max(0, Math.floor(Math.min(ay, by)) - pad);
     const right = Math.min(width, Math.ceil(Math.max(ax, bx)) + pad);
