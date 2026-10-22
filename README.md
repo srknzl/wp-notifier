@@ -24,10 +24,24 @@ WhatsApp grubu ──> SessionManager (Geçmiş Senkronizasyonu & Canlı Dinleme
 
 ## Hızlı Başlangıç
 
+### macOS
+```bash
+npm run setup:macos     # Gerekli bağımlılıkları ve OCR motorunu kurar
+npm run groups          # Grupları listeler; hedef grubun ID'sini kopyala
+npm start               # Botu başlatır
+
+# Bilgisayar her açıldığında arka planda otomatik başlaması için (Launchd):
+npm run autostart:macos
+```
+
+### Windows
 ```bash
 npm install
 npm run groups          # Grupları listeler; hedef grubun ID'sini kopyala
-npm start               # Geçmişi tarar ve hedef grubu dinlemeye başlar
+npm start               # Botu başlatır
+
+# Bilgisayar her açıldığında arka planda sessiz başlaması için:
+npm run autostart:windows
 ```
 
 ## Ayarlar (`.env`)

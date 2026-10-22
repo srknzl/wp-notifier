@@ -11,6 +11,9 @@
     "postinstall": "node scripts/patch-wwebjs.js",
     "start": "node src/index.js",
     "groups": "node src/list-groups.js",
+    "setup:macos": "bash scripts/setup-macos.sh",
+    "autostart:macos": "bash scripts/setup-autostart-macos.sh",
+    "autostart:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup-autostart.ps1",
     "test:pdf": "node scripts/test-pdf.js",
     "test:image": "node scripts/test-image.js",
     "test": "node --test test/*.test.js"

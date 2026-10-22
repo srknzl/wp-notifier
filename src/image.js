@@ -10,6 +10,21 @@ import { join } from 'node:path';
 
 const execFileAsync = promisify(execFile);
 
+let cachedPythonBin = null;
+
+async function getPythonBin() {
+  if (cachedPythonBin) return cachedPythonBin;
+  const candidates = process.platform === 'win32' ? ['python', 'python3'] : ['python3', 'python'];
+  for (const bin of candidates) {
+    try {
+      await execFileAsync(bin, ['--version']);
+      cachedPythonBin = bin;
+      return bin;
+    } catch {}
+  }
+  return null;
+}
+
 export class ImageExtractor {
   constructor({ targetRegex, paddingPx = 1 } = {}) {
     this.targetRegex = targetRegex;
@@ -34,10 +49,13 @@ export class ImageExtractor {
    * Düşük çözünürlüklü ve zorlu görseller için RapidOCR (ONNX) ile satır ve tutar çıkarma.
    */
   async #extractWithRapid(imageBuffer, img) {
+    const pyBin = await getPythonBin();
+    if (!pyBin) return null;
+
     const tmpFile = join(tmpdir(), `ocr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`);
     try {
       await writeFile(tmpFile, imageBuffer);
-      const { stdout } = await execFileAsync('python', ['scripts/ocr.py', tmpFile], { timeout: 30000 });
+      const { stdout } = await execFileAsync(pyBin, ['scripts/ocr.py', tmpFile], { timeout: 30000 });
       const items = JSON.parse(stdout || '[]');
       if (!items || !items.length) return null;
 
