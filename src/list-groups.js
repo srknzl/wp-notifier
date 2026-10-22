@@ -15,11 +15,37 @@ const client = new Client({
 
 client.on('qr', (qr) => qrcode.generate(qr, { small: true }));
 client.on('ready', async () => {
-  const chats = await client.getChats();
-  for (const chat of chats.filter((c) => c.isGroup)) {
-    console.log(`${chat.id._serialized}\t${chat.name}`);
+  try {
+    const groups = await client.pupPage.evaluate(() => {
+      try {
+        const chatModels = window.require('WAWebCollections').Chat.getModelsArray();
+        return chatModels
+          .filter((c) => c.isGroup || (c.id && c.id._serialized && c.id._serialized.endsWith('@g.us')))
+          .map((c) => ({
+            id: c.id?._serialized,
+            name: c.name || c.formattedTitle || c.contact?.name || 'İsimsiz Grup',
+          }))
+          .filter((g) => g.id);
+      } catch {
+        return [];
+      }
+    });
+
+    if (groups && groups.length > 0) {
+      for (const group of groups) {
+        console.log(`${group.id}\t${group.name}`);
+      }
+    } else {
+      const chats = await client.getChats();
+      for (const chat of chats.filter((c) => c.isGroup)) {
+        console.log(`${chat.id._serialized}\t${chat.name}`);
+      }
+    }
+  } catch (err) {
+    console.error('Grup listesi alınırken hata oluştu:', err.message || err);
+  } finally {
+    await client.destroy();
+    process.exit(0);
   }
-  await client.destroy();
-  process.exit(0);
 });
 client.initialize();

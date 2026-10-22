@@ -33,18 +33,47 @@ function parseRegex(raw) {
 }
 
 export function loadConfig() {
+  const channel = optional('NOTIFICATION_CHANNEL', 'whatsapp').toLowerCase();
+  if (!['whatsapp', 'twilio'].includes(channel)) {
+    throw new Error('NOTIFICATION_CHANNEL "whatsapp" veya "twilio" olmalı');
+  }
+
   const urlMode = optional('EVIDENCE_URL_MODE', 'public');
   if (!['public', 'presigned'].includes(urlMode)) {
     throw new Error('EVIDENCE_URL_MODE "public" veya "presigned" olmalı');
   }
 
+  const twilio = channel === 'twilio' ? {
+    accountSid: required('TWILIO_ACCOUNT_SID'),
+    authToken: required('TWILIO_AUTH_TOKEN'),
+    from: required('TWILIO_FROM_NUMBER'),
+    to: required('ALERT_DESTINATION_NUMBER'),
+  } : {
+    accountSid: optional('TWILIO_ACCOUNT_SID', ''),
+    authToken: optional('TWILIO_AUTH_TOKEN', ''),
+    from: optional('TWILIO_FROM_NUMBER', ''),
+    to: optional('ALERT_DESTINATION_NUMBER', 'self'),
+  };
+
+  const s3 = channel === 'twilio' ? {
+    bucket: required('AWS_S3_BUCKET_NAME'),
+    region: required('AWS_S3_REGION'),
+    urlMode,
+    acl: optional('AWS_S3_OBJECT_ACL', undefined),
+    publicBaseUrl: optional('EVIDENCE_PUBLIC_BASE_URL', undefined),
+    presignExpirySeconds: int('EVIDENCE_PRESIGN_EXPIRY_SECONDS', 7 * 24 * 3600),
+  } : {
+    bucket: optional('AWS_S3_BUCKET_NAME', ''),
+    region: optional('AWS_S3_REGION', ''),
+    urlMode,
+    acl: optional('AWS_S3_OBJECT_ACL', undefined),
+    publicBaseUrl: optional('EVIDENCE_PUBLIC_BASE_URL', undefined),
+    presignExpirySeconds: int('EVIDENCE_PRESIGN_EXPIRY_SECONDS', 7 * 24 * 3600),
+  };
+
   return {
-    twilio: {
-      accountSid: required('TWILIO_ACCOUNT_SID'),
-      authToken: required('TWILIO_AUTH_TOKEN'),
-      from: required('TWILIO_FROM_NUMBER'),
-      to: required('ALERT_DESTINATION_NUMBER'),
-    },
+    channel,
+    twilio,
     whatsapp: {
       targetGroupId: required('TARGET_GROUP_ID'),
       sessionDataPath: optional('SESSION_DATA_PATH', './.wwebjs_auth'),
@@ -52,16 +81,10 @@ export function loadConfig() {
       heartbeatMinutes: int('HEARTBEAT_INTERVAL_MINUTES', 15),
       heartbeatTimeoutMs: int('HEARTBEAT_TIMEOUT_SECONDS', 30) * 1000,
       reconnectDelaysMs: [30_000, 60_000, 120_000],
+      alertDestination: optional('ALERT_DESTINATION_NUMBER', 'self'),
+      historyLookbackHours: int('HISTORY_LOOKBACK_HOURS', 168),
     },
-    s3: {
-      bucket: required('AWS_S3_BUCKET_NAME'),
-      region: required('AWS_S3_REGION'),
-      // AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY SDK tarafından ortamdan otomatik okunur.
-      urlMode,
-      acl: optional('AWS_S3_OBJECT_ACL', undefined),
-      publicBaseUrl: optional('EVIDENCE_PUBLIC_BASE_URL', undefined),
-      presignExpirySeconds: int('EVIDENCE_PRESIGN_EXPIRY_SECONDS', 7 * 24 * 3600),
-    },
+    s3,
     pdf: {
       targetRegex: parseRegex(required('PDF_TARGET_REGEX')),
       renderScale: Number(optional('PDF_RENDER_SCALE', '3')),

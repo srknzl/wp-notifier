@@ -59,8 +59,8 @@ export class PdfExtractor {
   }
 
   /**
-   * PDF'te hedef satırı bulur, sayfayı yüksek çözünürlükte render edip satırı kırpar.
-   * Dönüş: null (eşleşme yok) | { keyword, amount, lineText, pageNumber, png }
+   * PDF'te hedef satırları bulur, sayfayı yüksek çözünürlükte render edip satırı kırpar.
+   * Dönüş: null (eşleşme yok) | match | match[]
    * Metin katmanı yoksa UnreadablePdfError fırlatır.
    */
   async extract(pdfBuffer) {
@@ -74,6 +74,8 @@ export class PdfExtractor {
 
     try {
       let sawText = false;
+      const matches = [];
+
       for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
         const page = await doc.getPage(pageNumber);
         const content = await page.getTextContent();
@@ -85,11 +87,12 @@ export class PdfExtractor {
           if (!match) continue;
           const amount = extractAmount(line.text, match.index + match[0].length) ?? 'N/A';
           const png = await this.#cropLine(page, line.box);
-          return { keyword: match[0].trim(), amount, lineText: line.text, pageNumber, png };
+          matches.push({ keyword: match[0].trim(), amount, lineText: line.text, pageNumber, png });
         }
       }
       if (!sawText) throw new UnreadablePdfError();
-      return null;
+      if (!matches.length) return null;
+      return matches.length === 1 ? matches[0] : matches;
     } finally {
       await doc.destroy();
     }

@@ -4,3 +4,5 @@ node_modules/
 .wwebjs_cache/
 data/
 crop.png
+*.traineddata
+*.traineddata.gz

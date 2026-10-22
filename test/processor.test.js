@@ -18,7 +18,7 @@ function setup() {
   const sent = [];
   const uploads = [];
   const handler = createMessageHandler({
-    config: { whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
+    config: { channel: 'twilio', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
     sms: { send: async (body) => sent.push(body) },
     storage: {
       uploadPng: async (png) => {
@@ -31,6 +31,24 @@ function setup() {
     audit: new AuditLog(dataDir),
   });
   return { handler, sent, uploads };
+}
+
+function setupWhatsApp() {
+  const dataDir = mkdtempSync(join(tmpdir(), 'wpn-wa-'));
+  const alerts = [];
+  const session = {
+    sendAlert: async (data) => {
+      alerts.push(data);
+    },
+  };
+  const handler = createMessageHandler({
+    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
+    session,
+    extractor: new PdfExtractor({ targetRegex: /(total\s*due|amount\s*payable)/i }),
+    dedupe: new DedupeStore(dataDir),
+    audit: new AuditLog(dataDir),
+  });
+  return { handler, alerts };
 }
 
 const pdfMessage = (file, from = GROUP) => ({
@@ -68,4 +86,51 @@ test('eşleşme yoksa SMS gitmez', async () => {
   const { handler, sent } = setup();
   await handler(pdfMessage('nomatch.pdf'));
   assert.equal(sent.length, 0);
+});
+
+test('WhatsApp kanalı: doğrudan WhatsApp görsel ve metin bildirimi atılır', async () => {
+  const { handler, alerts } = setupWhatsApp();
+  await handler(pdfMessage('invoice.pdf'));
+  assert.equal(alerts.length, 1);
+  assert.match(alerts[0].text, /1,620\.00 USD/);
+  assert.match(alerts[0].text, /Total Due/);
+  assert.equal(alerts[0].imageBuffer.subarray(1, 4).toString(), 'PNG');
+});
+
+test('Resim mesajı: OCR ile hedef satır bulunur, kırpılır ve bildirim gönderilir', async () => {
+  const dataDir = mkdtempSync(join(tmpdir(), 'wpn-img-'));
+  const alerts = [];
+  const session = { sendAlert: async (data) => alerts.push(data) };
+
+  const fakeImageExtractor = {
+    extract: async () => ({
+      keyword: 'Toplam Tutar',
+      amount: '1.250,00 TL',
+      lineText: 'Toplam Tutar: 1.250,00 TL',
+      pageNumber: 1,
+      png: Buffer.from('PNG_MOCK'),
+    }),
+  };
+
+  const handler = createMessageHandler({
+    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
+    session,
+    imageExtractor: fakeImageExtractor,
+    dedupe: new DedupeStore(dataDir),
+    audit: new AuditLog(dataDir),
+  });
+
+  const imageMsg = {
+    from: GROUP,
+    hasMedia: true,
+    type: 'image',
+    _data: { mimetype: 'image/jpeg', filename: 'makbuz.jpg' },
+    downloadMedia: async () => ({ mimetype: 'image/jpeg', filename: 'makbuz.jpg', data: Buffer.from('image_bytes').toString('base64') }),
+  };
+
+  await handler(imageMsg);
+  assert.equal(alerts.length, 1);
+  assert.match(alerts[0].text, /1\.250,00 TL/);
+  assert.match(alerts[0].text, /Toplam Tutar/);
+  assert.equal(alerts[0].imageBuffer.toString(), 'PNG_MOCK');
 });

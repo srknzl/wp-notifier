@@ -1,77 +1,66 @@
 # wp-notifier
 
-Bir WhatsApp grubuna düşen PDF'leri izler. PDF'te hedef satırı (ör. "Total Due", "Amount Payable") bulur, tutarı çıkarır, satırı görsel olarak kırpıp S3'e yükler ve linkiyle birlikte SMS atar. WhatsApp oturumu düşerse kendini kurtarmayı dener; kurtaramazsa kritik SMS gönderir.
+Bir WhatsApp grubuna düşen **görselleri (fotoğraf/makbuz/dekont)** ve **PDF'leri** izler. Belgede hedef satırı (ör. "18CA DAİRE 07", "18BA DAİRE 11", "Toplam Tutar") OCR ve metin katmanı ile bulur, tutarı çıkarır, ilgili satırı görsel olarak kırpar ve **doğrudan WhatsApp üzerinden görsel ve özet bilgi olarak** size iletir.
 
 ```
-WhatsApp grubu ──> SessionManager ──> processor ──> PdfExtractor ──> StorageService (S3) ──> SmsNotifier (Twilio)
-                        │ heartbeat (15 dk) / 3 yeniden bağlanma (30-60-120 sn)
-                        └──> başarısızsa [CRITICAL] SMS
+WhatsApp grubu ──> SessionManager (Geçmiş Senkronizasyonu & Canlı Dinleme)
+                        │
+                        ▼
+                   processor (Alakasız mesajları anında eler, checkpoint tutar)
+                        │
+                        ▼
+             ImageExtractor (OCR) / PdfExtractor
+                        │
+                        ▼
+             WhatsApp Sohbeti (Kırpılmış görsel & özet) [ÜCRETSİZ]
 ```
 
-## Gerekenler
+## Öne Çıkan Özellikler
 
-- Node.js 20+ (veya Docker)
-- WhatsApp'ı açık bir telefon (QR okutmak için) — bot bu hesap adına grubu okur
-- Twilio hesabı ve SMS gönderebilen bir numara
-- AWS S3 bucket'ı ve erişim anahtarı
+- **Geçmişe Dönük Çalışma (Catch-Up):** Bot her açıldığında kaldığı yerden (`data/checkpoint.json`) itibaren geçmiş mesajları tarar. Bot kapalıyken atılan faturalar/makbuzlar kaçırılmaz.
+- **Akıllı Filtreleme:** Düz metin sohbetler, ses kayıtları, çıkartmalar ve hedef daire içermeyen alakasız mesajlar anında atlanır (skip edilir).
+- **Çoklu Daire & Eşleşme:** Listede birden fazla daireniz varsa hepsini ayrı ayrı bulup her biri için kırpılmış görsel ve tutar gönderir.
+- **Fotoğraf & PDF Desteği:** Hem kamera çekimi/ekran görüntüsü makbuzları (OCR ile) hem de PDF belgelerini okur.
 
-## Kurulum
+## Hızlı Başlangıç
 
 ```bash
 npm install
-cp .env.example .env    # değerleri doldur
-npm run groups          # QR okut, grupları listeler; hedef grubun ID'sini .env'e yaz
-npm start               # ilk açılışta QR okutulursa oturum .wwebjs_auth içinde saklanır
+npm run groups          # Grupları listeler; hedef grubun ID'sini kopyala
+npm start               # Geçmişi tarar ve hedef grubu dinlemeye başlar
 ```
 
-PDF ayrıştırmayı Twilio/S3/WhatsApp olmadan denemek için:
+## Ayarlar (`.env`)
+
+```env
+# whatsapp (ücretsiz, önerilen) veya twilio
+NOTIFICATION_CHANNEL=whatsapp
+
+# Bildirimin geleceği numara (ör. 905336305062 veya 'self')
+ALERT_DESTINATION_NUMBER=905336305062
+
+# Takip edilecek grup ID'si (npm run groups ile bulunur)
+TARGET_GROUP_ID=905052114164-1499518342@g.us
+GROUP_LABEL=GÜNEŞHAN SİTESİ
+
+# Belgede aranacak daireler
+PDF_TARGET_REGEX=(?i)(18\s*-?\s*CA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|18\s*-?\s*BA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b)
+
+# İlk açılışta ne kadar geriye taranacağı (saat cinsinden, varsayılan 168 = 7 gün)
+HISTORY_LOOKBACK_HOURS=168
+```
+
+## Test Komutları
+
+WhatsApp olmadan tek bir resim veya PDF üzerinde test etmek için:
 
 ```bash
-node scripts/test-pdf.js fatura.pdf "(?i)toplam\s*tutar"   # crop.png üretir
+# Resim / Fotoğraf testi:
+node scripts/test-image.js makbuz.jpg
+
+# PDF testi:
+node scripts/test-pdf.js fatura.pdf
+
+# Tüm birim testleri:
 npm test
 ```
-
-## Sürekli çalıştırma
-
-**PM2:**
-```bash
-npm i -g pm2
-pm2 start ecosystem.config.cjs && pm2 save && pm2 startup
-pm2 logs wp-notifier        # QR gerekirse burada görünür
-```
-
-**Docker:**
-```bash
-docker compose up -d --build
-docker compose logs -f      # ilk açılışta QR'ı buradan okut
-```
-
-## S3 ayarı
-
-SMS'in tek segmentte (160 karakter) kalması için linkin kısa olması gerekir:
-
-- `EVIDENCE_URL_MODE=public` (varsayılan). Yeni bucket'larda ACL kapalıdır; `bucket-policy.json`'daki bucket adını değiştirip bucket policy olarak ekle ve "Block public access" ayarında policy'ye izin ver. Bu durumda yalnızca `evidence/` altı herkese açık olur.
-- Standart S3 linki ~115 karakterdir. Bu yüzden SMS kısa şablona düşer: `[ALERT] Total Due: 1,620.00 USD <link>`. Tam şablonu kullanmak için kısa alan adlı bir CloudFront dağıtımı kurup `EVIDENCE_PUBLIC_BASE_URL` olarak ver.
-- `EVIDENCE_URL_MODE=presigned` daha güvenlidir (link süreli olur) ama link ~500 karakter olduğu için SMS birkaç segmente bölünür.
-
-Fatura görselleri link sahibi herkese açık olur. Hassas belgeler için presigned modu düşün.
-
-## Davranış
-
-| Durum | Ne olur |
-|---|---|
-| Hedef satır bulundu | Kırpılmış PNG S3'e yüklenir, `[ALERT] ...` SMS'i gider |
-| Hedef bulunamadı | `data/audit.log`'a yazılır, SMS gitmez (`DEBUG_SMS_ON_NO_MATCH=true` ile gider) |
-| Metin katmanı yok (taranmış PDF) | `[WARNING] PDF received in <GRUP> but text layer was unreadable.` |
-| Aynı PDF tekrar geldi | MD5 kaydı (`data/processed.json`) sayesinde atlanır |
-| Telefondan çıkış / auth_failure | Hemen `[CRITICAL]` SMS'i |
-| Bağlantı koptu / heartbeat başarısız | 30, 60, 120 sn arayla 3 deneme; olmazsa `[CRITICAL]` |
-| Süreç çöktü | SMS atılır, PM2/Docker yeniden başlatır |
-
-- Türkçe karakterler SMS'te ASCII'ye çevrilir (ş→s, ı→i). Aksi halde SMS UCS-2'ye düşer ve sınır 70 karaktere iner.
-- PDF diske yazılmaz, yalnızca bellekte işlenir. Kırpılan görsel de diske yazılmadan doğrudan S3'e gider.
-- Tutar, eşleşen satırda anahtar kelimeden sonraki son sayıdır (`1,620.00 USD`, `12.345,67 TL` gibi).
-
-## Uyarı
-
-`whatsapp-web.js` resmi bir WhatsApp API'si değildir ve WhatsApp kullanım şartlarına aykırıdır. Kullanılan numara banlanabilir. Bu yüzden ana numara yerine ayrı bir hat kullanmak daha güvenlidir.
