@@ -13,7 +13,10 @@ const client = new Client({
   },
 });
 
-client.on('qr', (qr) => qrcode.generate(qr, { small: true }));
+client.on('qr', (qr) => {
+  console.log('Scan QR code via WhatsApp > Linked devices:');
+  qrcode.generate(qr, { small: true });
+});
 client.on('ready', async () => {
   try {
     const groups = await client.pupPage.evaluate(() => {
