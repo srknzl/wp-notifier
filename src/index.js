@@ -42,7 +42,7 @@ const handleMessage = createMessageHandler({
 // Oturum açıldığında geçmiş mesajları kaldığı yerden geriye dönük tara
 session.on('ready', async () => {
   const targetId = config.whatsapp.targetGroupId;
-  let since = checkpoint.getLastTimestamp(targetId);
+  let since = config.rescanOnStartup ? null : checkpoint.getLastTimestamp(targetId);
   if (!since) {
     const lookbackSec = (config.whatsapp.historyLookbackHours || 168) * 3600;
     since = Math.floor(Date.now() / 1000) - lookbackSec;

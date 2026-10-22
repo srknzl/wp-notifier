@@ -18,7 +18,7 @@ function setup() {
   const sent = [];
   const uploads = [];
   const handler = createMessageHandler({
-    config: { channel: 'twilio', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
+    config: { channel: 'twilio', enableDedupe: true, whatsapp: { targetGroupId: GROUP }, groupLabel: 'Muhasebe', debugSmsOnNoMatch: false },
     sms: { send: async (body) => sent.push(body) },
     storage: {
       uploadPng: async (png) => {
@@ -129,7 +129,9 @@ test('Resim mesajı: OCR ile hedef satır bulunur, kırpılır ve bildirim gönd
   };
 
   await handler(imageMsg);
-  assert.equal(alerts.length, 1);
+  await handler(imageMsg);
+  // Dedupe kapalı olduğu için aynı mesaj tekrar gönderildiğinde de incelenir
+  assert.equal(alerts.length, 2);
   assert.match(alerts[0].text, /1\.250,00 TL/);
   assert.match(alerts[0].text, /Toplam Tutar/);
   assert.equal(alerts[0].imageBuffer.toString(), 'PNG_MOCK');

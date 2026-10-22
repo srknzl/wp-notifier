@@ -62,7 +62,7 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
     const fileName = media.filename || filename || (isImage ? 'gorsel.jpg' : 'belge.pdf');
     let buffer = Buffer.from(media.data, 'base64');
     const hash = md5(buffer);
-    if (dedupe.has(hash)) {
+    if (config?.enableDedupe && dedupe?.has && dedupe.has(hash)) {
       logger.info(`Zaten işlendi, atlanıyor: ${fileName} (${hash})`);
       return;
     }

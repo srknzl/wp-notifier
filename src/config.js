@@ -93,5 +93,7 @@ export function loadConfig() {
     groupLabel: optional('GROUP_LABEL', 'WhatsApp grubu'),
     dataDir: optional('DATA_DIR', './data'),
     debugSmsOnNoMatch: optional('DEBUG_SMS_ON_NO_MATCH', 'false') === 'true',
+    enableDedupe: optional('ENABLE_DEDUPE', 'false') === 'true',
+    rescanOnStartup: optional('RESCAN_ON_STARTUP', 'true') === 'true',
   };
 }
