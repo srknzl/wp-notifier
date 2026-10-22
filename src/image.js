@@ -17,11 +17,12 @@ async function getPythonBin() {
   const candidates = process.platform === 'win32' ? ['python', 'python3'] : ['python3', 'python'];
   for (const bin of candidates) {
     try {
-      await execFileAsync(bin, ['--version']);
+      await execFileAsync(bin, ['-c', 'import rapidocr_onnxruntime']);
       cachedPythonBin = bin;
       return bin;
     } catch {}
   }
+  logger.warn('RapidOCR (rapidocr_onnxruntime) bulunamadı! Görsellerin doğru okunabilmesi için "pip install -r requirements.txt" çalıştırın.');
   return null;
 }
 

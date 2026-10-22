@@ -37,8 +37,9 @@ npm run autostart:macos
 ### Windows
 ```bash
 npm install
-npm run groups          # Grupları listeler; hedef grubun ID'sini kopyala
-npm start               # Botu başlatır
+pip install -r requirements.txt   # RapidOCR (görsellerin ve makbuzların yüksek doğrulukla okunması için)
+npm run groups                    # Grupları listeler; hedef grubun ID'sini kopyala
+npm start                         # Botu başlatır
 
 # Bilgisayar her açıldığında arka planda sessiz başlaması için:
 npm run autostart:windows

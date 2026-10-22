@@ -19,19 +19,31 @@ if [ "$NODE_VERSION" -lt 20 ]; then
 fi
 echo "✅ Node.js: $(node -v)"
 
-# 2. Python3 ve RapidOCR Kontrolü (Opsiyonel / Yüksek Doğruluklu OCR)
-if command -v python3 >/dev/null 2>&1; then
-    echo "✅ Python3: $(python3 --version)"
-    echo "📦 RapidOCR paketi kontrol ediliyor..."
-    if python3 -c "import rapidocr_onnxruntime" >/dev/null 2>&1; then
-        echo "✅ rapidocr-onnxruntime zaten yüklü."
-    else
-        echo "⬇️  rapidocr-onnxruntime yükleniyor (düşük kaliteli görseller için)..."
-        python3 -m pip install rapidocr-onnxruntime || echo "⚠️  pip yüklemesi atlandı, dahili Tesseract kullanılacak."
-    fi
-else
-    echo "ℹ️  Python3 bulunamadı. Bot dahili Tesseract.js OCR motoru ile çalışacak."
+# 2. Python3 ve RapidOCR Kontrolü (Zorunlu)
+echo "🔍 Python3 ve RapidOCR kontrol ediliyor..."
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "❌ Python3 bulunamadı!"
+    echo "   Görsellerin ve makbuzların okunabilmesi için Python3 ve RapidOCR zorunludur."
+    echo "   Lütfen Homebrew ile yükleyin: brew install python3"
+    exit 1
 fi
+echo "✅ Python3: $(python3 --version)"
+
+# RapidOCR kurulumu
+if python3 -c "import rapidocr_onnxruntime" >/dev/null 2>&1; then
+    echo "✅ rapidocr-onnxruntime zaten yüklü."
+else
+    echo "⬇️  rapidocr-onnxruntime yükleniyor..."
+    python3 -m pip install -r requirements.txt || python3 -m pip install rapidocr-onnxruntime
+fi
+
+# Doğrulama
+if ! python3 -c "import rapidocr_onnxruntime" >/dev/null 2>&1; then
+    echo "❌ rapidocr-onnxruntime yüklenemedi!"
+    echo "   Lütfen elle çalıştırın: pip3 install rapidocr-onnxruntime"
+    exit 1
+fi
+echo "✅ RapidOCR (ONNX) başarıyla doğrulandı."
 
 # 3. Bağımlılıkların Kurulumu
 echo "📦 Node.js paketleri yükleniyor..."
@@ -49,10 +61,10 @@ fi
 mkdir -p data
 
 echo ""
-echo "🎉 Kurulum tamamlandı!"
+echo "🎉 Kurulum eksiksiz tamamlandı!"
 echo ""
 echo "Kullanım:"
 echo "  - Botu başlatmak için:         npm start"
 echo "  - Testleri çalıştırmak için:    npm test"
-echo "  - Otomatik başlatma (Launchd): ./scripts/setup-autostart-macos.sh"
+echo "  - Otomatik başlatma (Launchd): npm run autostart:macos"
 echo ""
