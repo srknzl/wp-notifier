@@ -87,8 +87,13 @@ export class ImageExtractor {
         let amount = moneyItems.length ? moneyItems[moneyItems.length - 1].text : null;
         if (amount && /^\d+$/.test(amount) && amount.length >= 4) {
           amount = `${amount.slice(0, -2)},${amount.slice(-2)} TL`;
-        } else if (amount && !/TL|TRY|[$€£₺]/i.test(amount)) {
-          amount = `${amount} TL`;
+        } else if (amount) {
+          const clean = amount.replace(/[$€£₺]|\s*(?:TL|TRY|L|T)$/i, '').trim();
+          if (clean && /\d/.test(clean)) {
+            amount = `${clean} TL`;
+          } else if (!/TL|TRY|[$€£₺]/i.test(amount)) {
+            amount = `${amount} TL`;
+          }
         }
 
         // Crop only the target row tightly without capturing adjacent rows
