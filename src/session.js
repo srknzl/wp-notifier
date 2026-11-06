@@ -5,6 +5,7 @@ import qrcode from 'qrcode-terminal';
 import pkg from 'whatsapp-web.js';
 import { logger } from './logger.js';
 import { sleep, withTimeout } from './retry.js';
+import { AuthUIManager } from './auth-ui.js';
 
 const { Client, LocalAuth, MessageMedia } = pkg;
 const READY_TIMEOUT_MS = 120_000;
@@ -30,6 +31,7 @@ export class SessionManager extends EventEmitter {
     this.alerted = false;
     this.heartbeatTimer = null;
     this.selfChatId = null;
+    this.authUi = new AuthUIManager({ port: 3456 });
   }
 
   async start() {
@@ -39,6 +41,7 @@ export class SessionManager extends EventEmitter {
 
   async stop() {
     clearInterval(this.heartbeatTimer);
+    this.authUi.stop();
     await this.#destroyClient();
   }
 
@@ -190,19 +193,19 @@ export class SessionManager extends EventEmitter {
     });
 
     client.on('qr', (qr) => {
-      if (this.everAuthenticated) {
-        this.#critical('Session invalidated, new QR code requested');
-      }
-      logger.info('Scan QR code via WhatsApp > Linked devices:');
+      logger.info('Scan QR code via WhatsApp > Linked devices (or opened login window):');
       qrcode.generate(qr, { small: true });
+      this.authUi.showQr(qr);
     });
     client.on('authenticated', () => {
       this.everAuthenticated = true;
+      this.authUi.notifyAuthenticated();
       logger.info('WhatsApp: authenticated');
     });
     client.on('ready', async () => {
       this.ready = true;
       this.alerted = false;
+      this.authUi.notifyReady(client.info);
       try {
         const selfChat = await client.pupPage.evaluate(async (wid) => {
           const c = await window.WWebJS.getChat(wid, { getAsModel: false });
@@ -213,18 +216,19 @@ export class SessionManager extends EventEmitter {
       logger.info(`WhatsApp: ready (Connected user: ${client.info?.wid?.user})`);
       this.emit('ready');
     });
-    client.on('auth_failure', (msg) => {
+    client.on('auth_failure', async (msg) => {
       this.ready = false;
       logger.error(`WhatsApp: auth_failure ${msg}`);
-      this.#critical(`auth_failure: ${msg}`);
+      await this.#reauthenticate(`auth_failure: ${msg}`);
     });
-    client.on('disconnected', (reason) => {
+    client.on('disconnected', async (reason) => {
       this.ready = false;
       logger.warn(`WhatsApp: disconnected (${reason})`);
       if (reason === 'LOGOUT') {
-        this.#critical('Logged out from phone (LOGOUT)');
+        logger.warn('WhatsApp session logged out from phone. Re-authenticating...');
+        await this.#reauthenticate('Logged out from phone (LOGOUT)');
       } else {
-        this.#recover(`disconnected: ${reason}`);
+        await this.#recover(`disconnected: ${reason}`);
       }
     });
     client.on('message', (msg) => this.emit('message', msg));
@@ -239,7 +243,9 @@ export class SessionManager extends EventEmitter {
 
   async #initClient() {
     for (const lock of ['SingletonLock', 'SingletonCookie', 'SingletonSocket']) {
-      rmSync(join(this.sessionDataPath, 'session', lock), { force: true });
+      try {
+        rmSync(join(this.sessionDataPath, 'session', lock), { force: true });
+      } catch {}
     }
     this.client = this.#createClient();
     const readyPromise = new Promise((resolve) => this.client.once('ready', resolve));
@@ -257,6 +263,34 @@ export class SessionManager extends EventEmitter {
       await withTimeout(old.destroy(), 30_000, 'client.destroy');
     } catch (err) {
       logger.warn(`Could not cleanly destroy client: ${err.message}`);
+    }
+  }
+
+  async #reauthenticate(reason) {
+    if (this.recovering) return;
+    this.recovering = true;
+    try {
+      this.ready = false;
+      this.everAuthenticated = false;
+      logger.info(`Refreshing WhatsApp authentication (${reason})...`);
+      await this.#destroyClient();
+      await sleep(2000);
+
+      for (let attempt = 1; attempt <= 5; attempt++) {
+        try {
+          rmSync(this.sessionDataPath, { recursive: true, force: true });
+          break;
+        } catch {
+          await sleep(1000);
+        }
+      }
+
+      await this.#initClient();
+    } catch (err) {
+      logger.error(`Re-authentication failed: ${err.message}`);
+      this.#critical(`reauthenticate: ${err.message}`);
+    } finally {
+      this.recovering = false;
     }
   }
 

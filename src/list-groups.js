@@ -2,6 +2,9 @@
 import 'dotenv/config';
 import qrcode from 'qrcode-terminal';
 import pkg from 'whatsapp-web.js';
+import { AuthUIManager } from './auth-ui.js';
+
+const authUi = new AuthUIManager({ port: 3456 });
 
 const { Client, LocalAuth } = pkg;
 const client = new Client({
@@ -14,10 +17,15 @@ const client = new Client({
 });
 
 client.on('qr', (qr) => {
-  console.log('Scan QR code via WhatsApp > Linked devices:');
+  console.log('Scan QR code via WhatsApp > Linked devices (or opened login window):');
   qrcode.generate(qr, { small: true });
+  authUi.showQr(qr);
+});
+client.on('authenticated', () => {
+  authUi.notifyAuthenticated();
 });
 client.on('ready', async () => {
+  authUi.notifyReady(client.info);
   try {
     const groups = await client.pupPage.evaluate(() => {
       try {

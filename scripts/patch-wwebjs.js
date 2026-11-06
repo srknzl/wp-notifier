@@ -60,3 +60,23 @@ if (existsSync(msgFile)) {
     console.log('[patch-wwebjs] Message.js patched.');
   }
 }
+
+// 3. Patch LocalAuth.js (prevent EBUSY crash during logout on Windows)
+const authFile = join('node_modules', 'whatsapp-web.js', 'src', 'authStrategies', 'LocalAuth.js');
+if (existsSync(authFile)) {
+  let content = readFileSync(authFile, 'utf8');
+  let changed = false;
+
+  if (content.includes('throw new Error(e);')) {
+    content = content.replace(
+      '.catch((e) => {\n                    throw new Error(e);\n                });',
+      '.catch(() => {\n                    // Handled: ignore lockfile EBUSY on Windows during logout\n                });'
+    );
+    changed = true;
+  }
+
+  if (changed) {
+    writeFileSync(authFile, content, 'utf8');
+    console.log('[patch-wwebjs] LocalAuth.js patched.');
+  }
+}

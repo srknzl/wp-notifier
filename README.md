@@ -26,6 +26,7 @@ WhatsApp Group ──> SessionManager (History Catch-Up & Live Listening)
 - **Tight Row Cropping:** Milimeter-accurate single-line crop without capturing irrelevant adjacent rows.
 - **History Catch-Up:** Restores state from `data/checkpoint.json` on restart and replays missed messages received while offline.
 - **Deduplication:** MD5 hash store (`data/processed.json`) prevents duplicate alerts if the same document is re-shared.
+- **Auto Re-Authentication & Desktop QR Window:** If your WhatsApp session expires or is unlinked, the bot automatically catches the event, spawns a dedicated desktop login window with a live-updating QR code, sends a desktop notification, and smoothly resumes operations upon scan without crashing.
 - **Fast Noise Filtering:** Non-document messages (stickers, audio notes, plain text chats) are discarded immediately without overhead.
 - **Multi-Match Support:** If a single document contains multiple matching units/rows, separate cropped alerts and amount summaries are dispatched for each.
 
