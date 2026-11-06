@@ -38,3 +38,4 @@ test('AuthUIManager: starts HTTP server, serves login page and SSE events', asyn
   ui.stop();
   assert.equal(ui.server, null);
 });
+

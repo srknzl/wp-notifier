@@ -408,3 +408,4 @@ export class AuthUIManager {
     }
   }
 }
+

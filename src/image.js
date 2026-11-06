@@ -104,7 +104,7 @@ export class ImageExtractor {
 
         matches.push({
           keyword: match[0].trim(),
-          amount: amount || 'Amount shown in image',
+          amount: amount || 'Görselde belirtilen tutar',
           lineText,
           pageNumber: 1,
           png,
@@ -210,7 +210,7 @@ export class ImageExtractor {
 
       matches.push({
         keyword,
-        amount: amount || 'Amount shown in image',
+        amount: amount || 'Görselde belirtilen tutar',
         lineText: line.text,
         pageNumber: 1,
         png,

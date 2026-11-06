@@ -85,7 +85,7 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
         audit.record('unreadable_media', { fileName, hash });
         if (session?.sendAlert && config.channel !== 'twilio') {
           await session.sendAlert({
-            text: `⚠️ *[WARNING]* Text layer in "${fileName}" from ${config.groupLabel} could not be read.`,
+            text: `⚠️ *[UYARI]* ${config.groupLabel} sohbetine gelen "${fileName}" dosyasının metin katmanı okunamadı.`,
           });
         } else if (sms) {
           await sms.send(templates.unreadablePdf({ group: config.groupLabel }));
@@ -100,7 +100,7 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
         if (config.debugSmsOnNoMatch) {
           if (session?.sendAlert && config.channel !== 'twilio') {
             await session.sendAlert({
-              text: `ℹ️ *[INFO]* Target text not found in "${fileName}" from ${config.groupLabel}.`,
+              text: `ℹ️ *[BİLGİ]* ${config.groupLabel} sohbetindeki "${fileName}" dosyasında aranan daire/hedef metin bulunamadı.`,
             });
           } else if (sms) {
             await sms.send(templates.noMatchDebug({ group: config.groupLabel, file: fileName }));
@@ -117,13 +117,13 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
         // 1. WhatsApp Channel (Default & Free: sends cropped image and summary directly to WhatsApp)
         if (session?.sendAlert && config.channel !== 'twilio') {
           const caption = [
-            `📋 *[NOTIFICATION] Target Amount Found*`,
-            `📍 Source: ${config.groupLabel}`,
-            `📄 File: ${fileName}`,
-            `🏠 Target: *${item.keyword}*`,
-            `💰 Amount: *${item.amount}*`,
-            item.pageNumber && !isImage ? `📑 Page: ${item.pageNumber}` : null,
-            `📝 Line: _"${item.lineText}"_`,
+            `📋 *[BİLDİRİM] Daire Aidat/Fatura Tutarı Bulundu*`,
+            `📍 Kaynak: ${config.groupLabel}`,
+            `📄 Dosya: ${fileName}`,
+            `🏠 Eşleşen Daire: *${item.keyword}*`,
+            `💰 Tutar: *${item.amount}*`,
+            item.pageNumber && !isImage ? `📑 Sayfa: ${item.pageNumber}` : null,
+            `📝 Satır: _"${item.lineText}"_`,
           ]
             .filter(Boolean)
             .join('\n');
