@@ -136,3 +136,27 @@ test('Image message: finds target row via OCR, crops, and sends alert', async ()
   assert.match(alerts[0].text, /Total Due/);
   assert.equal(alerts[0].imageBuffer.toString(), 'PNG_MOCK');
 });
+
+test('Apartment regex: matches CA07 and BA11 strictly, rejects 18A, 18B, IBA, BA07, CA11', () => {
+  const regex = /(?:\b18\s*-?\s*CA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|\bCA\s*-?\s*0?7\b|\b18\s*-?\s*BA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|\bBA\s*-?\s*11\b)/i;
+
+  // True targets
+  assert.ok(regex.test('18CA-07 18-CA DAİRE 07'));
+  assert.ok(regex.test('18CA DAIRE 7'));
+  assert.ok(regex.test('CA 07'));
+  assert.ok(regex.test('CA07'));
+  assert.ok(regex.test('18BA-11 18-BA DAİRE 11'));
+  assert.ok(regex.test('18BA DAIRE 11'));
+  assert.ok(regex.test('BA 11'));
+  assert.ok(regex.test('BA11'));
+
+  // False positives that must NOT match
+  assert.ok(!regex.test('DCPI284839 18A-11 18-A DAİRE 11 168 m2 2.942,92 TL'));
+  assert.ok(!regex.test('DCPI2RABI9 IBA 11 18 A DARE 11 FTES'));
+  assert.ok(!regex.test('18A-11 18-A DAİRE 11'));
+  assert.ok(!regex.test('18B-11 18-B DAİRE 11'));
+  assert.ok(!regex.test('18BA-07 18-BA DAİRE 07'));
+  assert.ok(!regex.test('18CA-11 18-CA DAİRE 11'));
+  assert.ok(!regex.test('ARABA 11'));
+  assert.ok(!regex.test('IBA 11'));
+});

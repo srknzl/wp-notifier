@@ -94,8 +94,8 @@ ALERT_DESTINATION_NUMBER=05336305062
 TARGET_GROUP_ID=905052114164-1499518342@g.us
 GROUP_LABEL=GÜNEŞHAN SİTESİ
 
-# Match target apartments (e.g. CA07 and BA11; excludes BA07 and CA11)
-PDF_TARGET_REGEX=(?i)(18\s*-?\s*CA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|CA\s*0?7\b|18\s*-?\s*BA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|BA\s*11\b)
+# Match target apartments (e.g. CA07 and BA11; excludes 18A, 18B, BA07, and CA11)
+PDF_TARGET_REGEX=(?i)(?:\b18\s*-?\s*CA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|\bCA\s*-?\s*0?7\b|\b18\s*-?\s*BA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|\bBA\s*-?\s*11\b)
 
 DEBUG_SMS_ON_NO_MATCH=false
 ENABLE_DEDUPE=true

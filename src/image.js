@@ -49,14 +49,14 @@ export class ImageExtractor {
   /**
    * Extract row and amount using RapidOCR (ONNX) for low-resolution or complex images.
    */
-  async #extractWithRapid(imageBuffer, img) {
-    const pyBin = await getPythonBin();
-    if (!pyBin) return null;
+  async #extractWithRapid(imageBuffer, img, pyBin = null) {
+    const bin = pyBin || (await getPythonBin());
+    if (!bin) return null;
 
     const tmpFile = join(tmpdir(), `ocr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`);
     try {
       await writeFile(tmpFile, imageBuffer);
-      const { stdout } = await execFileAsync(pyBin, ['scripts/ocr.py', tmpFile], { timeout: 30000 });
+      const { stdout } = await execFileAsync(bin, ['scripts/ocr.py', tmpFile], { timeout: 30000 });
       const items = JSON.parse(stdout || '[]');
       if (!items || !items.length) return null;
 
@@ -125,17 +125,17 @@ export class ImageExtractor {
   async extract(imageBuffer) {
     const img = await loadImage(imageBuffer);
 
-    // 1. First try deep-learning based RapidOCR (highly effective on noisy mobile photos)
-    try {
-      const rapidResult = await this.#extractWithRapid(imageBuffer, img);
-      if (rapidResult) {
-        return rapidResult;
+    // 1. Primary Engine: RapidOCR (ONNX deep-learning, highly accurate for receipts & tables)
+    const pyBin = await getPythonBin();
+    if (pyBin) {
+      try {
+        return await this.#extractWithRapid(imageBuffer, img, pyBin);
+      } catch (err) {
+        logger.warn(`RapidOCR execution failed, falling back to Tesseract: ${err.message}`);
       }
-    } catch (err) {
-      // Fallback to Tesseract.js if RapidOCR fails
     }
 
-    // 2. Fallback OCR Engine: Tesseract.js
+    // 2. Fallback OCR Engine: Tesseract.js (only used if RapidOCR is not available or crashed)
     const worker = await this.#getWorker();
 
     let ocrInput = imageBuffer;
