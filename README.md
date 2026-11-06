@@ -84,6 +84,7 @@ Configure bot behavior via environment variables in `.env`:
 | `ENABLE_DEDUPE` | `true` | Prevents re-processing identical files. |
 | `DEBUG_SMS_ON_NO_MATCH` | `false` | Whether to send debug notification when no target is found in document. |
 | `RESCAN_ON_STARTUP` | `false` | If `true`, ignores checkpoint and re-scans history from startup lookback window. |
+| `AIDAT_AMOUNT` | `1400` | Monthly fixed maintenance fee (aidat) in TL, summed with fuel bills in alerts. |
 
 ### Example `.env` Configuration
 
@@ -95,8 +96,9 @@ TARGET_GROUP_ID=905052114164-1499518342@g.us
 GROUP_LABEL=GÜNEŞHAN SİTESİ
 
 # Match target apartments (e.g. CA07 and BA11; excludes 18A, 18B, BA07, and CA11)
-PDF_TARGET_REGEX=(?i)(?:\b18\s*-?\s*CA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|\bCA\s*-?\s*0?7\b|\b18\s*-?\s*BA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|\bBA\s*-?\s*11\b)
+PDF_TARGET_REGEX=(?i)(?:(?<![a-zA-Z])18\s*-?\s*CA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|(?<![a-zA-Z])CA\s*-?\s*0?7(?![0-9])|(?<![a-zA-Z])18\s*-?\s*BA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|(?<![a-zA-Z])BA\s*-?\s*11(?![0-9]))
 
+AIDAT_AMOUNT=1400
 DEBUG_SMS_ON_NO_MATCH=false
 ENABLE_DEDUPE=true
 RESCAN_ON_STARTUP=false
