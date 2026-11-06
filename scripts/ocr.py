@@ -4,6 +4,11 @@ Usage: python scripts/ocr.py <image_path>
 """
 import sys
 import json
+
+# Ensure stdout uses UTF-8 regardless of Windows console/locale codepage (e.g. cp1254)
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 from rapidocr_onnxruntime import RapidOCR
 
 def main():

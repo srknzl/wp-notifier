@@ -138,17 +138,20 @@ test('Image message: finds target row via OCR, crops, and sends alert', async ()
 });
 
 test('Apartment regex: matches CA07 and BA11 strictly, rejects 18A, 18B, IBA, BA07, CA11', () => {
-  const regex = /(?:\b18\s*-?\s*CA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|\bCA\s*-?\s*0?7\b|\b18\s*-?\s*BA\b.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|\bBA\s*-?\s*11\b)/i;
+  const regex = /(?:(?<![a-zA-Z])18\s*-?\s*CA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*0?7\b|(?<![a-zA-Z])CA\s*-?\s*0?7(?![0-9])|(?<![a-zA-Z])18\s*-?\s*BA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]*11\b|(?<![a-zA-Z])BA\s*-?\s*11(?![0-9]))/i;
 
-  // True targets
+  // True targets (including merged OCR text without spaces)
   assert.ok(regex.test('18CA-07 18-CA DAİRE 07'));
   assert.ok(regex.test('18CA DAIRE 7'));
   assert.ok(regex.test('CA 07'));
   assert.ok(regex.test('CA07'));
+  assert.ok(regex.test('CA07 18CA BLOKDAIRE07'));
   assert.ok(regex.test('18BA-11 18-BA DAİRE 11'));
   assert.ok(regex.test('18BA DAIRE 11'));
   assert.ok(regex.test('BA 11'));
   assert.ok(regex.test('BA11'));
+  assert.ok(regex.test('BA1118BABLOKDAiRE11'));
+  assert.ok(regex.test('DCPI270795 | BA1118BABLOKDAiRE11 | 136m'));
 
   // False positives that must NOT match
   assert.ok(!regex.test('DCPI284839 18A-11 18-A DAİRE 11 168 m2 2.942,92 TL'));
@@ -159,4 +162,7 @@ test('Apartment regex: matches CA07 and BA11 strictly, rejects 18A, 18B, IBA, BA
   assert.ok(!regex.test('18CA-11 18-CA DAİRE 11'));
   assert.ok(!regex.test('ARABA 11'));
   assert.ok(!regex.test('IBA 11'));
+  assert.ok(!regex.test('BA111'));
+  assert.ok(!regex.test('CA071'));
+  assert.ok(!regex.test('CA070'));
 });
