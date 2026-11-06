@@ -94,6 +94,12 @@ test('WhatsApp channel: sends direct image and text alert to WhatsApp', async ()
   assert.equal(alerts.length, 1);
   assert.match(alerts[0].text, /1,620\.00 USD/);
   assert.match(alerts[0].text, /Total Due/);
+  assert.match(alerts[0].text, /Daire Yakıt Tutarı Bulundu/);
+  assert.match(alerts[0].text, /Kaynak: Accounting grubu/);
+  assert.match(alerts[0].text, /Ödenecek tutar:/);
+  assert.match(alerts[0].text, /Aidat 1400 TL'dir/);
+  assert.match(alerts[0].text, /Lütfen aidat tutarının güncel olduğunu kontrol edin/);
+  assert.doesNotMatch(alerts[0].text, /Dosya:/);
   assert.equal(alerts[0].imageBuffer.subarray(1, 4).toString(), 'PNG');
 });
 
@@ -113,7 +119,7 @@ test('Image message: finds target row via OCR, crops, and sends alert', async ()
   };
 
   const handler = createMessageHandler({
-    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Accounting', debugSmsOnNoMatch: false },
+    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'Accounting', aidatAmount: 1400, debugSmsOnNoMatch: false },
     session,
     imageExtractor: fakeImageExtractor,
     dedupe: new DedupeStore(dataDir),
@@ -133,7 +139,9 @@ test('Image message: finds target row via OCR, crops, and sends alert', async ()
   // Without dedupe, each received message produces an alert
   assert.equal(alerts.length, 2);
   assert.match(alerts[0].text, /1,250\.00 TL/);
+  assert.match(alerts[0].text, /2\.650,00 TL/);
   assert.match(alerts[0].text, /Total Due/);
+  assert.doesNotMatch(alerts[0].text, /Dosya:/);
   assert.equal(alerts[0].imageBuffer.toString(), 'PNG_MOCK');
 });
 

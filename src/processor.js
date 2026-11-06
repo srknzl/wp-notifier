@@ -4,6 +4,36 @@ import { ImageExtractor } from './image.js';
 import { templates } from './sms.js';
 import { md5 } from './dedupe.js';
 
+export function parseAmountValue(amountStr) {
+  if (!amountStr || typeof amountStr !== 'string') return null;
+  const cleaned = amountStr.replace(/[^0-9.,]/g, '').trim();
+  if (!cleaned) return null;
+  if (cleaned.includes('.') && cleaned.includes(',')) {
+    if (cleaned.lastIndexOf(',') > cleaned.lastIndexOf('.')) {
+      return parseFloat(cleaned.replace(/\./g, '').replace(',', '.'));
+    }
+    return parseFloat(cleaned.replace(/,/g, ''));
+  }
+  if (cleaned.includes(',')) {
+    if (/,\d{1,2}$/.test(cleaned)) {
+      return parseFloat(cleaned.replace(',', '.'));
+    }
+    return parseFloat(cleaned.replace(/,/g, ''));
+  }
+  if (cleaned.includes('.')) {
+    if (/\.\d{3}$/.test(cleaned) && !cleaned.includes(',')) {
+      return parseFloat(cleaned.replace(/\./g, ''));
+    }
+    return parseFloat(cleaned);
+  }
+  return parseFloat(cleaned);
+}
+
+export function formatTurkishCurrency(num) {
+  if (num == null || isNaN(num)) return null;
+  return num.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
+}
+
 // Handles incoming WhatsApp message: filters group/media (images & PDFs) -> extraction -> alerts.
 export function createMessageHandler({ config, session, sms, storage, extractor, pdfExtractor, imageExtractor, dedupe, checkpoint, audit }) {
   const pdfExt = pdfExtractor || extractor;
@@ -116,16 +146,27 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
         const item = matches[i];
         // 1. WhatsApp Channel (Default & Free: sends cropped image and summary directly to WhatsApp)
         if (session?.sendAlert && config.channel !== 'twilio') {
+          const groupSource = /grubu$/i.test(config.groupLabel) ? config.groupLabel : `${config.groupLabel} grubu`;
+          const aidat = Number(config.aidatAmount || 1400);
+          const parsedVal = parseAmountValue(item.amount);
+          const totalVal = parsedVal != null ? parsedVal + aidat : null;
+          const totalFormatted = totalVal != null
+            ? formatTurkishCurrency(totalVal)
+            : (item.amount ? `${item.amount} + ${aidat} TL Aidat` : `${aidat} TL`);
+
           const caption = [
-            `📋 *[BİLDİRİM] Daire Aidat/Fatura Tutarı Bulundu*`,
-            `📍 Kaynak: ${config.groupLabel}`,
-            `📄 Dosya: ${fileName}`,
+            `📋 *[BİLDİRİM] Daire Yakıt Tutarı Bulundu*`,
+            `📍 Kaynak: ${groupSource}`,
             `🏠 Eşleşen Daire: *${item.keyword}*`,
-            `💰 Tutar: *${item.amount}*`,
+            `💰 Yakıt Tutarı: *${item.amount}*`,
+            `💵 Ödenecek tutar: *${totalFormatted}*`,
             item.pageNumber && !isImage ? `📑 Sayfa: ${item.pageNumber}` : null,
             `📝 Satır: _"${item.lineText}"_`,
+            ``,
+            `Aidat ${aidat} TL'dir onu da toplayarak ödemeyi unutmayınız.`,
+            `Lütfen aidat tutarının güncel olduğunu kontrol edin. Güncel değilse güncellemek için bildirebilirsiniz.`,
           ]
-            .filter(Boolean)
+            .filter((line) => line !== null && line !== undefined)
             .join('\n');
 
           await session.sendAlert({

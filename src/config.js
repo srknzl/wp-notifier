@@ -91,6 +91,7 @@ export function loadConfig() {
       paddingPx: int('PDF_CROP_PADDING_PX', 20),
     },
     groupLabel: optional('GROUP_LABEL', 'WhatsApp group'),
+    aidatAmount: Number(optional('AIDAT_AMOUNT', '1400')),
     dataDir: optional('DATA_DIR', './data'),
     debugSmsOnNoMatch: optional('DEBUG_SMS_ON_NO_MATCH', 'false') === 'true',
     enableDedupe: optional('ENABLE_DEDUPE', 'true') === 'true',
