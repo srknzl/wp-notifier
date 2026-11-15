@@ -18,7 +18,7 @@ function setup() {
   const sent = [];
   const uploads = [];
   const handler = createMessageHandler({
-    config: { channel: 'twilio', enableDedupe: true, whatsapp: { targetGroupId: GROUP }, groupLabel: 'Accounting', debugSmsOnNoMatch: false },
+    config: { channel: 'twilio', skipDuplicateImages: true, whatsapp: { targetGroupId: GROUP }, groupLabel: 'Accounting', debugSmsOnNoMatch: false },
     sms: { send: async (body) => sent.push(body) },
     storage: {
       uploadPng: async (png) => {

@@ -94,8 +94,7 @@ export function loadConfig() {
     aidatAmount: Number(optional('AIDAT_AMOUNT', '1400')),
     dataDir: optional('DATA_DIR', './data'),
     debugSmsOnNoMatch: optional('DEBUG_SMS_ON_NO_MATCH', 'false') === 'true',
-    skipDuplicateImages: optional('SKIP_DUPLICATE_IMAGES', optional('ENABLE_DEDUPE', 'true')).toLowerCase() === 'true',
-    enableDedupe: optional('SKIP_DUPLICATE_IMAGES', optional('ENABLE_DEDUPE', 'true')).toLowerCase() === 'true',
+    skipDuplicateImages: optional('SKIP_DUPLICATE_IMAGES', 'true').toLowerCase() === 'true',
     rescanOnStartup: optional('RESCAN_ON_STARTUP', 'false') === 'true',
   };
 }

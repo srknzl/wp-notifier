@@ -82,7 +82,6 @@ Configure bot behavior via environment variables in `.env`:
 | `PDF_TARGET_REGEX` | - | Regular expression matching target units or amount lines. |
 | `HISTORY_LOOKBACK_HOURS`| `168` | Fallback lookback window in hours when no checkpoint exists (168 = 7 days). |
 | `SKIP_DUPLICATE_IMAGES` | `true` | If `true`, skips re-forwarded or re-uploaded images with identical binary data (MD5 hash). Set to `false` to re-process and send alerts again. |
-| `ENABLE_DEDUPE` | `true` | Alias/fallback for `SKIP_DUPLICATE_IMAGES`. |
 | `DEBUG_SMS_ON_NO_MATCH` | `false` | Whether to send debug notification when no target is found in document. |
 | `RESCAN_ON_STARTUP` | `false` | If `true`, ignores checkpoint and re-scans history from startup lookback window. |
 | `AIDAT_AMOUNT` | `1400` | Monthly fixed maintenance fee (aidat) in TL, summed with fuel bills in alerts. |
@@ -101,7 +100,7 @@ PDF_TARGET_REGEX=(?i)(?:(?<![a-zA-Z])18\s*-?\s*CA.*?(?:DA[İIıi]RE|D\b)?[\s\.:]
 
 AIDAT_AMOUNT=1400
 DEBUG_SMS_ON_NO_MATCH=false
-ENABLE_DEDUPE=true
+SKIP_DUPLICATE_IMAGES=true
 RESCAN_ON_STARTUP=false
 DATA_DIR=./data
 ```
