@@ -95,7 +95,8 @@ export function createMessageHandler({ config, session, sms, storage, extractor,
     const fileName = media.filename || filename || (isImage ? 'image.jpg' : 'document.pdf');
     let buffer = Buffer.from(media.data, 'base64');
     const hash = md5(buffer);
-    if (config?.enableDedupe && dedupe?.has && dedupe.has(hash)) {
+    const shouldSkipDuplicates = config?.skipDuplicateImages ?? config?.enableDedupe ?? false;
+    if (shouldSkipDuplicates && dedupe?.has && dedupe.has(hash)) {
       logger.info(`Already processed, skipping: ${fileName} (${hash})`);
       return;
     }

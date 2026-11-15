@@ -174,3 +174,66 @@ test('Apartment regex: matches CA07 and BA11 strictly, rejects 18A, 18B, IBA, BA
   assert.ok(!regex.test('CA071'));
   assert.ok(!regex.test('CA070'));
 });
+
+test('skipDuplicateImages config: skips identical re-forwarded/re-uploaded image when true, re-sends when false', async () => {
+  const dataDir = mkdtempSync(join(tmpdir(), 'wpn-dup-'));
+  const alerts = [];
+  const session = { sendAlert: async (data) => alerts.push(data) };
+  const fakeImageExtractor = {
+    extract: async () => ({
+      keyword: 'CA07',
+      amount: '1.003,24 TL',
+      lineText: 'CA07 1.003,24 TL',
+      pageNumber: 1,
+      png: Buffer.from('PNG_MOCK'),
+    }),
+  };
+  const dedupe = new DedupeStore(dataDir);
+  const audit = new AuditLog(dataDir);
+
+  const imageMsg1 = {
+    id: { _serialized: 'msg_1' },
+    timestamp: 1000,
+    from: GROUP,
+    hasMedia: true,
+    type: 'image',
+    _data: { mimetype: 'image/jpeg', filename: 'img1.jpg' },
+    downloadMedia: async () => ({ mimetype: 'image/jpeg', filename: 'img1.jpg', data: Buffer.from('same_binary_image').toString('base64') }),
+  };
+
+  // Re-forwarded or re-uploaded with a different message ID & filename, but identical image bytes
+  const imageMsgReforwarded = {
+    id: { _serialized: 'msg_2' },
+    timestamp: 2000,
+    from: GROUP,
+    hasMedia: true,
+    type: 'image',
+    _data: { mimetype: 'image/jpeg', filename: 'forwarded.jpg' },
+    downloadMedia: async () => ({ mimetype: 'image/jpeg', filename: 'forwarded.jpg', data: Buffer.from('same_binary_image').toString('base64') }),
+  };
+
+  // 1. When skipDuplicateImages = true, second identical image is skipped
+  const handlerSkip = createMessageHandler({
+    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'GÜNEŞHAN SİTESİ', skipDuplicateImages: true },
+    session,
+    imageExtractor: fakeImageExtractor,
+    dedupe,
+    audit,
+  });
+
+  await handlerSkip(imageMsg1);
+  await handlerSkip(imageMsgReforwarded);
+  assert.equal(alerts.length, 1);
+
+  // 2. When skipDuplicateImages = false, identical image is processed and sent again
+  const handlerAllow = createMessageHandler({
+    config: { channel: 'whatsapp', whatsapp: { targetGroupId: GROUP }, groupLabel: 'GÜNEŞHAN SİTESİ', skipDuplicateImages: false },
+    session,
+    imageExtractor: fakeImageExtractor,
+    dedupe,
+    audit,
+  });
+
+  await handlerAllow(imageMsgReforwarded);
+  assert.equal(alerts.length, 2);
+});

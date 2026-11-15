@@ -1,12 +1,15 @@
 import { EventEmitter } from 'node:events';
+import { execFile } from 'node:child_process';
 import { rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { promisify } from 'node:util';
 import qrcode from 'qrcode-terminal';
 import pkg from 'whatsapp-web.js';
 import { logger } from './logger.js';
 import { sleep, withTimeout } from './retry.js';
 import { AuthUIManager } from './auth-ui.js';
 
+const execFileAsync = promisify(execFile);
 const { Client, LocalAuth, MessageMedia } = pkg;
 const READY_TIMEOUT_MS = 120_000;
 
@@ -35,8 +38,13 @@ export class SessionManager extends EventEmitter {
   }
 
   async start() {
-    await this.#initClient();
     this.heartbeatTimer = setInterval(() => this.#heartbeat(), this.heartbeatMs);
+    try {
+      await withTimeout(this.#initClient(), READY_TIMEOUT_MS, 'WhatsApp initial ready');
+    } catch (err) {
+      logger.warn(`Initial startup failed (${err.message}), entering recovery...`);
+      await this.#recover(`startup: ${err.message}`);
+    }
   }
 
   async stop() {
@@ -173,6 +181,9 @@ export class SessionManager extends EventEmitter {
             msg.id = msg.id || {};
             msg.id._serialized = item.id;
           }
+          if (!msg.timestamp && item.t) {
+            msg.timestamp = item.t;
+          }
           await onMessage(msg);
         }
       } catch (err) {
@@ -241,28 +252,71 @@ export class SessionManager extends EventEmitter {
     return client;
   }
 
-  async #initClient() {
-    for (const lock of ['SingletonLock', 'SingletonCookie', 'SingletonSocket']) {
+  async #forceKillPid(pid) {
+    if (!pid) return;
+    try {
+      if (process.platform === 'win32') {
+        await execFileAsync('taskkill', ['/F', '/T', '/PID', String(pid)], { windowsHide: true, timeout: 10_000 });
+      } else {
+        process.kill(pid, 'SIGKILL');
+      }
+    } catch {
+      // Process already exited
+    }
+  }
+
+  async #killOrphanedBrowsers() {
+    const absSessionPath = resolve(this.sessionDataPath);
+    try {
+      if (process.platform === 'win32') {
+        const escaped = absSessionPath.replace(/'/g, "''");
+        const cmd = `Get-CimInstance Win32_Process -Filter "Name = 'chrome.exe'" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -and $_.CommandLine.Contains('${escaped}') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`;
+        await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', cmd], {
+          windowsHide: true,
+          timeout: 10_000,
+        });
+      } else {
+        await execFileAsync('pkill', ['-9', '-f', absSessionPath], { timeout: 5_000 });
+      }
+    } catch {
+      // No orphaned browser processes found
+    }
+    for (const lock of ['SingletonLock', 'SingletonCookie', 'SingletonSocket', 'lockfile']) {
       try {
         rmSync(join(this.sessionDataPath, 'session', lock), { force: true });
       } catch {}
     }
-    this.client = this.#createClient();
-    const readyPromise = new Promise((resolve) => this.client.once('ready', resolve));
-    await this.client.initialize();
-    return readyPromise;
+  }
+
+  async #initClient() {
+    await this.#killOrphanedBrowsers();
+    const client = this.#createClient();
+    this.client = client;
+    try {
+      const readyPromise = new Promise((resolve) => client.once('ready', resolve));
+      await client.initialize();
+      return await readyPromise;
+    } catch (err) {
+      await this.#destroyClient();
+      throw err;
+    }
   }
 
   async #destroyClient() {
     if (!this.client) return;
     const old = this.client;
+    const browserProc = old.pupBrowser?.process?.();
     this.client = null;
     this.ready = false;
     old.removeAllListeners();
     try {
-      await withTimeout(old.destroy(), 30_000, 'client.destroy');
+      await withTimeout(old.destroy(), 15_000, 'client.destroy');
     } catch (err) {
       logger.warn(`Could not cleanly destroy client: ${err.message}`);
+    } finally {
+      if (browserProc?.pid) {
+        await this.#forceKillPid(browserProc.pid);
+      }
     }
   }
 
@@ -274,6 +328,7 @@ export class SessionManager extends EventEmitter {
       this.everAuthenticated = false;
       logger.info(`Refreshing WhatsApp authentication (${reason})...`);
       await this.#destroyClient();
+      await this.#killOrphanedBrowsers();
       await sleep(2000);
 
       for (let attempt = 1; attempt <= 5; attempt++) {
@@ -295,7 +350,12 @@ export class SessionManager extends EventEmitter {
   }
 
   async #heartbeat() {
-    if (this.recovering || !this.client) return;
+    if (this.recovering) return;
+    if (!this.client || !this.ready || !this.client.pupPage) {
+      logger.warn('Heartbeat: client or browser page not ready, triggering recovery...');
+      await this.#recover('heartbeat: client not ready');
+      return;
+    }
     try {
       const state = await withTimeout(this.client.getState(), this.heartbeatTimeoutMs, 'getState');
       if (state !== 'CONNECTED') {
@@ -328,6 +388,7 @@ export class SessionManager extends EventEmitter {
           logger.warn(`Post-reconnect state: ${state}`);
         } catch (err) {
           logger.warn(`Reconnect attempt failed: ${err.message}`);
+          await this.#destroyClient();
         }
       }
       this.#critical(`${reason}; ${this.reconnectDelaysMs.length} reconnect attempts failed`);
